@@ -1,0 +1,17 @@
+#!/bin/zsh
+
+i=0
+while  (( i < 10 ))
+    do
+        echo -n "i = $i,"
+        i=$(( i+1 ))
+    done
+
+echo "end $i"
+
+for i in {0..9}
+    do
+        echo -n "i = $i,"
+    done
+
+echo "end $i"
