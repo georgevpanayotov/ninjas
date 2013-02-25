@@ -16,3 +16,7 @@ set guioptions-=T
 set number
 
 command Braces :%s/^\(\s*\)[^ \t]\+.*\zs\s*{\s*$/\r\1{
+
+hi diffAdd ctermfg=white ctermbg=darkblue guifg=white guifg=darkblue
+hi diffChange ctermfg=white ctermbg=magenta guifg=white guibg=magenta
+hi diffText ctermfg=black ctermbg=green guifg=black guibg=green
