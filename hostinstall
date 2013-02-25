@@ -1,0 +1,3 @@
+#!/bin/zsh
+
+apt-get -y install virtualbox-qt

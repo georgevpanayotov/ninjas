@@ -1,0 +1,7 @@
+#!/bin/bash
+
+apt-get -y install zsh
+apt-get -y install openssh-server
+apt-get -y install vim
+apt-get -y install screen
+apt-get -y install git
