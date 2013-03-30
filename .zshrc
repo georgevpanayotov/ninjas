@@ -12,3 +12,6 @@ if [[ $(screen -ls | grep -i gpanayotov | wc -l) -eq 0 ]]
         screen -d -m -S gpanayotov
     fi
 psed() { perl -pi -e $* }
+
+bindkey ';5D' backward-word
+bindkey ';5C' forward-word
