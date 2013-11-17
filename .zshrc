@@ -3,6 +3,7 @@ alias build='./build'
 alias ~="cd ~"
 PATH=$PATH:~/bin
 export SVN_EDITOR=vim
+export EDITOR=vim
 vimf() { vim "$(find . -iname $1)" }
 
 alias 0it="tr \"\\n\" \"\\0\""
@@ -15,3 +16,4 @@ psed() { perl -pi -e $* }
 
 bindkey ';5D' backward-word
 bindkey ';5C' forward-word
+set -o emacs
