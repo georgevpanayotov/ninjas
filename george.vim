@@ -9,7 +9,8 @@ set vb
 set ai
 set si
 set hls
-set ruler set bs=2
+set ruler 
+set bs=2
 set guioptions-=T
 set number
 set t_Co=256
