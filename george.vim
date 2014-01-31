@@ -35,13 +35,21 @@ command Braces :%s/^\(\s*\)\S\+.*\zs\s*{\s*$/\r\1{
 syntax on
 if &diff | syntax off | endif
 
-" Keep tabs on the tabs by hight lighting them green (in addition to listchars above)
-" Similarly highlight trailing spaces
 highlight TabColor ctermbg=green guibg=green ctermfg=black guifg=black
-let tabMatch = matchadd('TabColor', '\t')
-let trailingMatch = matchadd('TabColor', '\s\+$')
-
-" highlight the 101st column (only for lines that reach that far)
-" helps to keep us within the 100 width columns
 highlight ColorColumn ctermbg=red guibg=red
-let colorColumnMatch = matchadd('ColorColumn', '\%101v')
+
+function SetMatches()
+    if !exists('w:matches_created')
+        let w:matches_created = 1
+        " Keep tabs on the tabs by hight lighting them green (in addition to listchars above)
+        " Similarly highlight trailing spaces
+        let w:tabMatch = matchadd('TabColor', '\t')
+        let w:trailingMatch = matchadd('TabColor', '\s\+$')
+
+        " highlight the 101st column (only for lines that reach that far)
+        " helps to keep us within the 100 width columns
+        let w:colorColumnMatch = matchadd('ColorColumn', '\%101v')
+    endif
+endfunction
+
+au BufWinEnter * call SetMatches()
