@@ -17,3 +17,6 @@ psed() { perl -pi -e $* }
 bindkey ';5D' backward-word
 bindkey ';5C' forward-word
 set -o emacs
+
+autoload -U compinit 
+compinit
