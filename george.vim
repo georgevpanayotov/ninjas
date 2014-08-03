@@ -53,3 +53,4 @@ function SetMatches()
 endfunction
 
 au BufWinEnter * call SetMatches()
+au BufNewFile *.java %!~/src/vim_templates/java_template.sh %
