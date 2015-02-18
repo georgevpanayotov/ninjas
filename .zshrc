@@ -2,6 +2,7 @@ PS1='[%c]$ '
 alias build='./build'
 alias ~="cd ~"
 PATH=$PATH:~/bin
+PATH=$PATH:~/src/ninjas/utils
 export SVN_EDITOR=vim
 export EDITOR=vim
 vimf() { vim "$(find . -iname $1)" }
