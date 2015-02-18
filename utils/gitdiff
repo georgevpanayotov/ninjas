@@ -1,0 +1,31 @@
+#!/bin/zsh
+
+# path old-file old-hex old-mode new-file new-hex new-mode
+echo -n "$1"
+if [[ "$4" != "$7" ]]
+    then
+        echo ": $4 $7"
+    else
+        echo ""
+    fi
+
+if [[ $((file $2;file $5) | grep "\(\<data\>\|\<binary\>\)" | wc -l ) -ne 0 ]]
+    then
+        echo "Binary file, skipping"
+        exit
+    fi
+
+diff "$2" "$5" > /dev/null
+result=$?
+
+if [[ $result -eq 0 ]]
+    then
+        echo "No difference"
+    else 
+        if [[ $result -eq 1 ]]
+        then
+             vimdiff "$2" "$5" < `tty` > `tty`
+        else
+            exit 1
+        fi
+    fi

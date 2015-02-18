@@ -1,0 +1,10 @@
+#!/bin/zsh
+
+if [[ "$1" == "0" ]]
+    then
+        echo pass
+        say pass
+    else
+        echo fail
+        say fail
+    fi

@@ -1,0 +1,18 @@
+#!/usr/bin/osascript
+
+
+
+set num to 0
+
+tell application "Xcode"
+    repeat with theDocument in source documents
+        if (num) is 0 then
+            set myPath to  (path of theDocument)
+        else
+            set myPath to myPath & "\n" & (path of theDocument)
+        end if
+        set num to num + 1
+    end repeat
+    myPath
+end tell
+

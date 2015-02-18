@@ -1,0 +1,28 @@
+#!/bin/zsh
+
+if [[ $1 == "" ]]
+    then
+        # first parameter is required
+        echo "Usage:\n  yo <SECONDS> [<WORDS>]" 
+        exit 1
+    fi
+
+date
+
+# save the number of seconds
+sec=$1
+
+#shift up to drop the first parameter
+shift
+
+# by default.  Say yo
+saying=yo
+if [[ $1 != "" ]] 
+    then
+        # if second parameter is present, then use it
+        # (and all the ones following) to choose what to say
+        saying="$*"
+    fi
+
+#sleep for the given number of seconds and then say $saying
+sleep $sec && say $saying
