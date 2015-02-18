@@ -1,5 +1,5 @@
 " My personal vim settings and preferences
-so ~/src/ninjas/george.vim
+so `cat ~/.ninjas`/george.vim
 
 " settings for enabling plugins written by Damiam Conway
-so ~/src/ninjas/conway.vim
+so `cat ~/.ninjas`/conway.vim
