@@ -1,3 +1,20 @@
+if [[ "$STY" != "" ]]; then
+    # we are using a screen
+    stitle.sh
+
+    do_cd()
+    {
+        action=$1
+        shift
+        $action $*
+        stitle.sh
+    }
+
+    alias cd="do_cd cd"
+    alias pushd="do_cd pushd"
+    alias popd="do_cd popd"
+fi
+
 PS1='[%c]$ '
 alias build='./build'
 alias ~="cd ~"
