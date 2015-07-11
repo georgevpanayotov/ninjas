@@ -1,0 +1,4 @@
+#!/bin/zsh
+
+screen -d gpanayotov
+screen -r gpanayotov
