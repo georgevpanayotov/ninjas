@@ -4,15 +4,19 @@ let g:default_width = 100
 " Updates the matches. Handles changes in width or just turns on matches for starters.
 " Passing 0 for width disables matches.
 function UpdateMatches(width)
-    if exists('w:matches_created')
-        if a:width == 0
-            :call UnsetMatches()
-        elseif a:width != w:width
-            :call UnsetMatches()
+    if ShouldMatch()
+        if exists('w:matches_created')
+            if a:width == 0
+                :call UnsetMatches()
+            elseif a:width != w:width
+                :call UnsetMatches()
+                :call SetMatches(a:width)
+            endif
+        else
             :call SetMatches(a:width)
         endif
-    else
-        :call SetMatches(a:width)
+    elseif exists('w:matches_created')
+        :call UnsetMatches()
     endif
 endfunction
 
@@ -44,8 +48,24 @@ function UnsetMatches()
     unlet w:colorColumnMatch
 endfunction
 
-" Automatically enables matching for each window.
-au WinEnter * if exists('w:width') | :call UpdateMatches(w:width) | else | :call UpdateMatches(g:default_width) | endif
+" Allows us to filter certain types of files and not use matches there.
+function ShouldMatch()
+    return &filetype != 'help'
+endfunction
+
+" Helper to simplify the au.
+function Matches_au()
+    if exists('w:width')
+        :call UpdateMatches(w:width)
+    else
+        :call UpdateMatches(g:default_width)
+    endif
+endfunction
+
+" Automatically enables matching for each window. WinEnter makes sure that this works on every
+" :split command too. BufWinEnter makes sure that this doesn't work on the help documentation.
+au WinEnter * :call Matches_au()
+au BufWinEnter * :call Matches_au()
 
 " Bootstrap us on the first window.
 call UpdateMatches(g:default_width)
