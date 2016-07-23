@@ -38,6 +38,7 @@ if &diff | syntax off | endif
 
 highlight TabColor ctermbg=green guibg=green ctermfg=black guifg=black
 highlight ColorColumn ctermbg=red guibg=red
+highlight DiffAdd ctermfg=white guifg=white
 
 au BufNewFile *.java %!~/src/vim_templates/java_template.sh %
 
