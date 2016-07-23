@@ -24,7 +24,11 @@ if [[ $(screen -ls | grep -i gpanayotov | wc -l) -eq 0 ]]
     then
         screen -d -m -S gpanayotov
     fi
-psed() { perl -pi -e $* }
+
+pvim()
+{
+    vim $@ -c "set nomod" -
+}
 
 bindkey ';5D' backward-word
 bindkey ';5C' forward-word
