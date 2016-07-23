@@ -23,6 +23,7 @@ map <F2> :%!xpretty <ENTER>
 map <F3> :!chmod +w "%"<ENTER>
 map <F5> :!./%<ENTER>
 map <F6> :!echo % >> ~/foo<ENTER>
+nnoremap <silent> \\ :nohls<CR>
 
 " commands
 " put braces on the right line (after the statement ... duh!)
