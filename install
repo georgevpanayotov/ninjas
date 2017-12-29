@@ -16,8 +16,9 @@ relink()
 # deploying vimrc
 relink $(cat ~/.ninjas)/.vimrc ~/.vimrc
 
-# deploying zshrc
+# deploying zsh stuff
 relink $(cat ~/.ninjas)/.zshrc ~/.zshrc
+relink $(cat ~/.ninjas)/.zshenv ~/.zshenv
 
 # deploying screenrc
 relink $(cat ~/.ninjas)/.screenrc ~/.screenrc
