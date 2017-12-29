@@ -41,5 +41,6 @@ highlight ColorColumn ctermbg=red guibg=red
 highlight DiffAdd ctermfg=white guifg=white
 
 au BufNewFile *.java %!~/src/vim_templates/java_template.sh %
+au BufNewFile,BufRead *.scala set filetype=scala
 
 so `cat ~/.ninjas`/matches.vim
