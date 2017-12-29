@@ -1,33 +1,41 @@
 " settings
-set nocompatible
-set ts=4
-set sw=4
-set nowrap
-set et
-set t_vb=
-set vb
 set ai
-set si
-set hls
-set ruler
-set bs=2
-set guioptions-=T
-set number
-set t_Co=256
 set backupskip=/tmp/*,/private/tmp/*
-set listchars=tab:>:
+set bs=2
+set et
+set guioptions-=T
+set hls
 set list
+set listchars=tab:>:
+set nocompatible
+set nowrap
+set number
+set ruler
+set si
+set sw=4
+set t_Co=256
+set t_vb=
+set ts=4
+set vb
+set ignorecase
+set laststatus=2
+set wildmode=longest,list,full
+set wildmenu
 
 " mappings
-map <F2> :%!xpretty <ENTER>
-map <F3> :!chmod +w "%"<ENTER>
-map <F5> :!./%<ENTER>
 map <F6> :!echo % >> ~/foo<ENTER>
 nnoremap <silent> \\ :nohls<CR>
+nnoremap <silent> \= :call FormatGP()<ENTER>
+cnoremap \h <C-R>=expand("%:h/")<CR>
+cnoremap \f <C-R>=expand("%</")<CR>
 
-" commands
-" put braces on the right line (after the statement ... duh!)
-command Braces :%s/^\(\s*\)\S\+.*\zs\s*{\s*$/\r\1{
+set equalprg=clang-format\ -style=file\ -assume-filename=%
+
+function FormatGP()
+  let l:winview = winsaveview()
+  norm gg=G
+  call winrestview(l:winview)
+endfunction
 
 " highlighting
 " syntax on except for diffs. In the case of diffs,
@@ -42,5 +50,6 @@ highlight DiffAdd ctermfg=white guifg=white
 
 au BufNewFile *.java %!~/src/vim_templates/java_template.sh %
 au BufNewFile,BufRead *.scala set filetype=scala
+set directory=~/.vim/swp//
 
 so `cat ~/.ninjas`/matches.vim
