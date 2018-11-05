@@ -7,7 +7,7 @@ fi
 
 source $NINJAS_PATH/helpers.zsh
 
-packages=($(loadPackages))
+packages=($(listPackages))
 
 for package in $packages; do
     envScript="$package/zshenv"

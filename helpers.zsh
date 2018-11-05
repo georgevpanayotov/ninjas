@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-loadPackages() {
+listPackages() {
     echo $NINJAS_PATH/default
     find $HOME/.ninjas/ -maxdepth 1 -mindepth 1 -type d
 }
