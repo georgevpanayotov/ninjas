@@ -1,11 +1,6 @@
 loadPackage() {
     local package="$1"
 
-    local rcScript="$package/zshrc"
-    if [[ -f "$rcScript" ]]; then
-        source "$rcScript"
-    fi
-
     local fnPath="$package/zshfn"
     if [[ -d "$fnPath" ]]; then
         fpath[1,0]=("$fnPath")
@@ -25,6 +20,11 @@ loadPackage() {
     if [[ -e "$gitConfig" ]]; then
         maybeCreateGitConfig
         echo "path = $gitConfig" >> ~/.ninjas/.gitconfig
+    fi
+
+    local rcScript="$package/zshrc"
+    if [[ -f "$rcScript" ]]; then
+        source "$rcScript"
     fi
 }
 
