@@ -1,3 +1,27 @@
 George Panayotov 12/27/2012
 
 Ninjas: Versioning the config files used for various utilities.
+
+Installation:
+
+./install
+
+
+Extensibility:
+Additional configs can be loaded by putting a directory into
+.ninjas/
+
+The following files can be added to .ninjas subdirectory
+
+  zshrc # Sourced in .zshrc
+  zshenv # Sourced in .zshenv
+  gitconfig # Included in .gitconfig
+  hgrc # Included in .hgrc
+
+The following files can be added to .ninjas subdirectory
+
+  bin # Added to $PATH
+  vim # Added to vim's runtimepath
+  zshfn # Added to fpath
+
+The first package to be loaded will be the "default" package that lives in the ninjas repo.
