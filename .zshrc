@@ -1,7 +1,7 @@
 packages=($(loadPackages))
 
-rm -rf .ninjas/.hgrc
-rm -rf .ninjas/.gitconfig
+rm -rf ~/.ninjas/.hgrc
+rm -rf ~/.ninjas/.gitconfig
 
 () {
     for package in $packages; do
@@ -23,13 +23,13 @@ rm -rf .ninjas/.gitconfig
 
         local hgRc="$package/hgrc"
         if [[ -e "$hgRc" ]]; then
-            echo "%include $hgRc" >> .ninjas/.hgrc
+            echo "%include $hgRc" >> ~/.ninjas/.hgrc
         fi
 
         local gitConfig="$package/gitconfig"
         if [[ -e "$gitConfig" ]]; then
             maybeCreateGitConfig
-            echo "path = $gitConfig" >> .ninjas/.gitconfig
+            echo "path = $gitConfig" >> ~/.ninjas/.gitconfig
         fi
     done
 }

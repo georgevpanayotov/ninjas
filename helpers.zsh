@@ -16,7 +16,7 @@ relink() {
 }
 
 maybeCreateGitConfig() {
-    if [[ ! -e .ninjas/.gitconfig ]]; then
-        echo "[include]" >> .ninjas/.gitconfig
+    if [[ ! -e ~/.ninjas/.gitconfig ]]; then
+        echo "[include]" >> ~/.ninjas/.gitconfig
     fi
 }
