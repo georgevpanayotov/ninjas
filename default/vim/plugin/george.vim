@@ -51,5 +51,3 @@ highlight DiffAdd ctermfg=white guifg=white
 au BufNewFile *.java %!~/src/vim_templates/java_template.sh %
 au BufNewFile,BufRead *.scala set filetype=scala
 set directory=~/.vim/swp//
-
-so `cat ~/.ninjas`/matches.vim

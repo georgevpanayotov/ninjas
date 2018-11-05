@@ -1,0 +1,9 @@
+[user]
+	name = George Panayotov
+	email = georgep1245@gmail.com
+[core]
+	excludesfile = /Users/george/.gitignore_global
+[diff]
+  tool=vimdiff
+[status]
+	showUntrackedFiles = no

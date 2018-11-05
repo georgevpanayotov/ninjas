@@ -1,5 +1,5 @@
-" My personal vim settings and preferences
-so `cat ~/.ninjas`/george.vim
+let s:packages = split(system('source $NINJAS_PATH/helpers.zsh; loadPackages'), '\n')
 
-" settings for enabling plugins written by Damiam Conway
-so `cat ~/.ninjas`/conway.vim
+for s:package in s:packages
+    let &rtp .= ',' . s:package . '/vim'
+endfor

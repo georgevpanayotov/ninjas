@@ -1,24 +1,28 @@
 #!/bin/zsh
 
-pwd > ~/.ninjas
+source helpers.zsh
 
-relink()
-{
-    if [[ ( -L $2 ) || ( ! ( -e $2 ) ) ]]; then
-        echo "Linking $2 to point to $1"
-        ln -s -f $1 $2
-    else
-        echo "File $2 already present. Please remove it first"
-        exit 1
-    fi
-}
+if [[ -f ~/.ninjas ]]; then
+    echo "Removing legacy install."
+    rm ~/.ninjas
+fi
+
+mkdir -p ~/.ninjas
+
+pwd > ~/.ninjas/.path
 
 # deploying vimrc
-relink $(cat ~/.ninjas)/.vimrc ~/.vimrc
+relink $PWD/.vimrc ~/.vimrc
 
 # deploying zsh stuff
-relink $(cat ~/.ninjas)/.zshrc ~/.zshrc
-relink $(cat ~/.ninjas)/.zshenv ~/.zshenv
+relink $PWD/.zshrc ~/.zshrc
+relink $PWD/.zshenv ~/.zshenv
 
 # deploying screenrc
-relink $(cat ~/.ninjas)/.screenrc ~/.screenrc
+relink $PWD/.screenrc ~/.screenrc
+
+# deploying .git config
+relink $PWD/.gitconfig ~/.gitconfig
+
+# deploying hgrc
+relink $PWD/.hgrc ~/.hgrc

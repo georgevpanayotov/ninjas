@@ -1,14 +1,18 @@
-HISTFILE=~/.history
-HISTSIZE=10000
-SAVEHIST=1000
+if [[ -e ~/.ninjas/.path ]]; then
+    NINJAS_PATH=$(cat ~/.ninjas/.path)
+else
+    echo "Ninjas not installed."
+    exit 1
+fi
 
-# Useful defines
-PS1='[%c]$ '
-PATH=$PATH:~/bin
-PATH=$PATH:$(cat ~/.ninjas)/utils
-TERM=xterm-256color
-itup=build
-dank=test
+source $NINJAS_PATH/helpers.zsh
 
-export EDITOR=vim
-alias vimx="xcdoc | tail -n 1 | 0it | xargs -0 -o vim -o"
+packages=($(loadPackages))
+
+for package in $packages; do
+    envScript="$package/zshenv"
+
+    if [[ -f "$envScript" ]]; then
+        source "$envScript"
+    fi
+done

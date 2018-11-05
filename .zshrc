@@ -1,34 +1,35 @@
-unsetopt beep
-bindkey -e
-bindkey ^x accept-search
+packages=($(loadPackages))
 
-if [[ "$STY" != "" ]]; then
-    # we are using a screen
-    stitle.sh
+rm -rf .ninjas/.hgrc
+rm -rf .ninjas/.gitconfig
 
-    chpwd()
-    {
-        stitle.sh
-    }
-fi
+() {
+    for package in $packages; do
 
-if [[ $(screen -ls | grep -i gpanayotov | wc -l) -eq 0 ]]
-    then
-        screen -d -m -S gpanayotov
-    fi
+        local rcScript="$package/zshrc"
+        if [[ -f "$rcScript" ]]; then
+            source "$rcScript"
+        fi
 
-pvim()
-{
-    vim $@ -c "set nomod" -
+        local fnPath="$package/zshfn"
+        if [[ -d "$fnPath" ]]; then
+            fpath[1,0]=("$fnPath")
+        fi
+
+        local binPath="$package/bin"
+        if [[ -d "$binPath" ]]; then
+            PATH="$PATH:$binPath"
+        fi
+
+        local hgRc="$package/hgrc"
+        if [[ -e "$hgRc" ]]; then
+            echo "%include $hgRc" >> .ninjas/.hgrc
+        fi
+
+        local gitConfig="$package/gitconfig"
+        if [[ -e "$gitConfig" ]]; then
+            maybeCreateGitConfig
+            echo "path = $gitConfig" >> .ninjas/.gitconfig
+        fi
+    done
 }
-
-bindkey ';5D' backward-word
-bindkey ';5C' forward-word
-set -o emacs
-
-# The following lines were added by compinstall
-zstyle :compinstall filename '/Users/george/.zshrc'
-
-autoload -Uz compinit
-compinit
-# End of lines added by compinstall
