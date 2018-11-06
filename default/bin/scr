@@ -1,7 +1,11 @@
 #!/bin/zsh
 
+if [[ "$SCREEN_CMD" == "" ]]; then
+    SCREEN_CMD=screen
+fi
+
 if [[ "$1" == "" ]]; then
-    screen -rx
+    $SCREEN_CMD -rx
 else
-    ssh -t "$1" screen -rx
+    ssh -t "$1" $SCREEN_CMD -rx
 fi
