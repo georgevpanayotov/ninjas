@@ -11,14 +11,17 @@ Extensibility:
 Additional configs can be loaded by putting a directory into
 .ninjas/
 
-The following files can be added to .ninjas subdirectory
+For instance:
+.ninjas/package
+
+The following files can be added to the package
 
   zshrc # Sourced in .zshrc
   zshenv # Sourced in .zshenv
   gitconfig # Included in .gitconfig
   hgrc # Included in .hgrc
 
-The following files can be added to .ninjas subdirectory
+The following folders can be added to the package
 
   bin # Added to $PATH
   vim # Added to vim's runtimepath
