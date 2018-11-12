@@ -39,8 +39,8 @@ pvim() {
         local SCREEN_CMD=screen
     fi
 
-    if [[ $(screen -ls | grep -i gpanayotov | wc -l) -eq 0 ]]; then
-        $SCREEN_CMD -d -m -S gpanayotov
+    if [[ $(screen -ls | grep -i ${USER}_scr | wc -l) -eq 0 ]]; then
+        $SCREEN_CMD -d -m -S ${USER}_scr
     fi
 }
 
