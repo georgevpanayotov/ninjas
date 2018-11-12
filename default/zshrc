@@ -47,6 +47,8 @@ pvim() {
 # Update the prompt and screen title at startup.
 update_dir
 
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
 # The following lines were added by compinstall
 zstyle :compinstall filename '/Users/george/.zshrc'
 

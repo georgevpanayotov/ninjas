@@ -57,6 +57,10 @@ au FileType cpp call UpdateMatches(80)
 
 set directory=~/.vim/swp//
 
+if exists(":FZF")
+  map \t :FZF<ENTER>
+fi
+
 if has('python')
   pyfile ~/src/settings/utils/selectv.py
   map \c :pydo ChangeToCamelCase() <ENTER>

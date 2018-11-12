@@ -7,3 +7,6 @@ PATH=$PATH:~/bin
 TERM=xterm-256color
 
 export EDITOR=vim
+
+FZF_CTRL_T_COMMAND=~/src/settings/utils/fzf_cmd.sh
+FZF_DEFAULT_COMMAND=~/src/settings/utils/fzf_cmd.sh
