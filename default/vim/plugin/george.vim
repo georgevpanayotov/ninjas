@@ -57,9 +57,7 @@ au FileType cpp call UpdateMatches(80)
 
 set directory=~/.vim/swp//
 
-if exists(":FZF")
-  map \t :FZF<ENTER>
-endif
+map \t :FZF<ENTER>
 
 
 if has('python')
