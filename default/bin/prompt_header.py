@@ -42,8 +42,10 @@ def find_containing_folder(special_dirs, dot_files):
 if __name__ == "__main__":
   # We care about hg and git clients as well as any clients configured via PROMPT_HEADER_DOT_FILES.
   special_dirs = {os.environ["HOME"] : "~"}
-  env_dot_files = os.environ["PROMPT_DOT_FILES"].split(":")
+  env_dot_files = []
+  if "PROMPT_DOT_FILES" in os.environ:
+    env_dot_files = os.environ["PROMPT_DOT_FILES"].split(":")
   dot_files = [".hg", ".git"]
-  dot_files.append(env_dot_files)
+  dot_files.extend(env_dot_files)
 
   find_containing_folder(special_dirs, dot_files)
