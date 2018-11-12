@@ -12,24 +12,25 @@ set nowrap
 set number
 set ruler
 set si
+set nosmarttab
+set nohidden
 set sw=4
+set ts=4
 set t_Co=256
 set t_vb=
-set ts=4
 set vb
 set ignorecase
 set laststatus=2
 set wildmode=longest,list,full
 set wildmenu
+set nosol
 
 " mappings
-map <F6> :!echo % >> ~/foo<ENTER>
 nnoremap <silent> \\ :nohls<CR>
 nnoremap <silent> \= :call FormatGP()<ENTER>
 cnoremap \h <C-R>=expand("%:h/")<CR>
 cnoremap \f <C-R>=expand("%</")<CR>
 
-set equalprg=clang-format\ -style=file\ -assume-filename=%
 
 function FormatGP()
   let l:winview = winsaveview()
@@ -48,6 +49,22 @@ highlight TabColor ctermbg=green guibg=green ctermfg=black guifg=black
 highlight ColorColumn ctermbg=red guibg=red
 highlight DiffAdd ctermfg=white guifg=white
 
-au BufNewFile *.java %!~/src/vim_templates/java_template.sh %
-au BufNewFile,BufRead *.scala set filetype=scala
+command CommentStrip :g/^[^:]*:\d\+\(:\d\+\)\?:\s*\/\//d
+command Itch :vnew|setlocal buftype=nofile|setlocal bufhidden=hide|setlocal noswapfile
+
+au FileType objc,objcpp,cpp,proto setlocal equalprg=clang-format\ -style=file\ -assume-filename=%
+au FileType cpp call UpdateMatches(80)
+
 set directory=~/.vim/swp//
+
+if has('python')
+  pyfile ~/src/settings/utils/selectv.py
+  map \c :pydo ChangeToCamelCase() <ENTER>
+  map \s :pydo ChangeToSnakeCase() <ENTER>
+  map \( :pydo WrapWord("(", ")") <ENTER>
+  map \{ :pydo WrapWord("{", "}") <ENTER>
+  map \[ :pydo WrapWord("[", "]") <ENTER>
+  map \" :pydo WrapWord("\"", "\"") <ENTER>
+  map \' :pydo WrapWord("'", "'") <ENTER>
+  map \< :pydo WrapWord("<", ">") <ENTER>
+endif

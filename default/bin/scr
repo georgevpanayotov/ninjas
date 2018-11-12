@@ -4,8 +4,12 @@ if [[ "$SCREEN_CMD" == "" ]]; then
     SCREEN_CMD=screen
 fi
 
-if [[ "$1" == "" ]]; then
-    $SCREEN_CMD -rx
+if [[ "$1" != "" ]]; then
+  saved_state=$(stty -g)
+
+  ssh -t "$1" "$SCREEN_CMD -rx gpana_scr" || (failed=$?; tput rmcup; echo "ssh failed with $failed")
+  stty -raw
+  stty $saved_state
 else
-    ssh -t "$1" $SCREEN_CMD -rx
+  $SCREEN_CMD -rx gpana_scr
 fi

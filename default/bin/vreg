@@ -1,0 +1,18 @@
+#!/bin/zsh
+
+if [[ "$1" == "" ]]; then
+  REG_NAME=\"
+else
+  REG_NAME="$1"
+fi
+
+TEMP_FILE=~/$(uuidgen)
+
+touch $TEMP_FILE
+vim -c :normal\ \"${REG_NAME}p -c :wq $TEMP_FILE < /dev/tty > /dev/tty
+
+cat $TEMP_FILE
+
+TRAPEXIT() {
+  rm $TEMP_FILE
+}

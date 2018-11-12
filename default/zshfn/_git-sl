@@ -1,0 +1,4 @@
+#compdef git-sl
+#description Short log with graphical merges shown.
+
+_alternative "short-log:Short log:{_git-log}"

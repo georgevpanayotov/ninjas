@@ -1,0 +1,4 @@
+#compdef git-churn
+#description Which files have changed (churned) the most.
+
+_alternative "churn-log:Churn log:{_git-log}"

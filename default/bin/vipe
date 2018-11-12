@@ -1,0 +1,14 @@
+#!/bin/zsh
+
+# Pick temp file.
+TMP_FILE=$HOME/$(uuidgen)
+
+# Dump our input into the temp file.
+cat > $TMP_FILE
+
+# Use vim to edit the file (and allocate a TTY for vim).
+vim $TMP_FILE < /dev/tty > /dev/tty
+
+# Print out the edited temp file. And then delete it.
+# TODO: Trap aborts so we don't leak files.
+cat $TMP_FILE && (rm $TMP_FILE > /dev/null 2> /dev/null)

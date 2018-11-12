@@ -1,0 +1,10 @@
+#!/bin/zsh
+
+# grab the command we want
+X_CMD=$1
+
+# shift so we can grab the remaining args
+shift
+
+# TODO: make it possible to pass other args to xargs
+xargs sh -c "$X_CMD \"\$@\" < /dev/tty" $X_CMD $*
