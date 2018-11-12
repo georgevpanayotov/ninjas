@@ -1,0 +1,20 @@
+[ui]
+username = George Panayotov <georgep1245@gmail.com>
+verbose = True
+merge = vimdiff
+
+[extensions]
+extdiff =
+strip =
+
+[merge-tools]
+vimdiff.executable = vim
+vimdiff.args = -d $output $local $base $other -c "wincmd J" -c '/^[<>=]/' -c 'normal n'
+vimdiff.premerge = keep
+
+[alias]
+upsu=up --hidden "successors($1)"
+allpush=push -r "allsuccessors(obsolete())"
+
+[color]
+status.deleted = red bold underline
