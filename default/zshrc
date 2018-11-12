@@ -53,5 +53,4 @@ update_dir
 zstyle :compinstall filename '/Users/george/.zshrc'
 
 autoload -Uz compinit
-compinit
 # End of lines added by compinstall

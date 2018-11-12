@@ -36,3 +36,5 @@ packages=($(listPackages))
 for package in $packages; do
     loadPackage $package
 done
+
+compinit
