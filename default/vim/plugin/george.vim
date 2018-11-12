@@ -61,14 +61,9 @@ if exists(":FZF")
   map \t :FZF<ENTER>
 endif
 
-function RelPyfile(file)
-  let s:path = fnamemodify(resolve(expand('<sfile>:p')), ':h')
-
-  execute 'pyfile ' . s:path . file
-endfunction
 
 if has('python')
-  call RelPyfile('selectv.py')
+  execute 'pyfile ' . fnamemodify(resolve(expand('<sfile>:p')), ':h') . '/selectv.py'
   map \c :pydo ChangeToCamelCase() <ENTER>
   map \s :pydo ChangeToSnakeCase() <ENTER>
   map \( :pydo WrapWord("(", ")") <ENTER>
