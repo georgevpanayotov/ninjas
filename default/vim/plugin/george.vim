@@ -59,10 +59,16 @@ set directory=~/.vim/swp//
 
 if exists(":FZF")
   map \t :FZF<ENTER>
-fi
+endif
+
+function RelPyfile(file)
+  let s:path = fnamemodify(resolve(expand('<sfile>:p')), ':h')
+
+  execute 'pyfile ' . s:path . file
+endfunction
 
 if has('python')
-  pyfile ~/src/settings/utils/selectv.py
+  call RelPyfile('selectv.py')
   map \c :pydo ChangeToCamelCase() <ENTER>
   map \s :pydo ChangeToSnakeCase() <ENTER>
   map \( :pydo WrapWord("(", ")") <ENTER>
