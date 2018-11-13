@@ -5,5 +5,7 @@
 	excludesfile = /Users/george/.gitignore_global
 [diff]
   tool=vimdiff
+[merge]
+        tool = vimdiff
 [status]
 	showUntrackedFiles = no
