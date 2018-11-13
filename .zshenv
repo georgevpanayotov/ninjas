@@ -1,5 +1,5 @@
 if [[ -e ~/.ninjas/.path ]]; then
-    NINJAS_PATH=$(cat ~/.ninjas/.path)
+    export NINJAS_PATH=$(cat ~/.ninjas/.path)
 else
     echo "Ninjas not installed."
     exit 1
