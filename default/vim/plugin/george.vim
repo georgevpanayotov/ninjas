@@ -55,6 +55,9 @@ command Itch :vnew|setlocal buftype=nofile|setlocal bufhidden=hide|setlocal nosw
 au FileType objc,objcpp,cpp,proto setlocal equalprg=clang-format\ -style=file\ -assume-filename=%
 au FileType cpp call UpdateMatches(80)
 
+au BufRead *.swift set filetype=swift
+au BufNewFile *.swift set filetype=swift
+
 set directory=~/.vim/swp//
 
 map \t :FZF<ENTER>
