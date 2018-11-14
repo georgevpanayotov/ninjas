@@ -8,7 +8,7 @@ loadPackage() {
 
     local binPath="$package/bin"
     if [[ -d "$binPath" ]]; then
-        PATH="$PATH:$binPath"
+        PATH="$binPath:$PATH"
     fi
 
     local hgRc="$package/hgrc"
