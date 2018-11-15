@@ -7,7 +7,7 @@ fi
 if [[ "$1" != "" ]]; then
   saved_state=$(stty -g)
 
-  ssh -t "$1" "$SCREEN_CMD -rx ${USER}_scr" || (failed=$?; tput rmcup; echo "ssh failed with $failed")
+  ssh -t "$1" "$SCREEN_CMD -rx \${USER}_scr" || (failed=$?; tput rmcup; echo "ssh failed with $failed")
   stty -raw
   stty $saved_state
 else
