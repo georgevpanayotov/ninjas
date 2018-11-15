@@ -31,7 +31,7 @@ zshaddhistory() {
 }
 
 pvim() {
-    vim $@ -c "set nomod" -
+    vim $@ -c "setlocal buftype=nofile" -c "setlocal bufhidden=hide" -c "setlocal noswapfile" -
 }
 
 () {
