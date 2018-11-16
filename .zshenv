@@ -7,12 +7,15 @@ fi
 
 source $NINJAS_PATH/helpers.zsh
 
-packages=($(listPackages))
+() {
+    local packages=($(listPackages))
+    local package=""
 
-for package in $packages; do
-    envScript="$package/zshenv"
+    for package in $packages; do
+        envScript="$package/zshenv"
 
-    if [[ -f "$envScript" ]]; then
-        source "$envScript"
-    fi
-done
+        if [[ -f "$envScript" ]]; then
+            source "$envScript"
+        fi
+    done
+}

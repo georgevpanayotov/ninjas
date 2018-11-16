@@ -36,10 +36,13 @@ loadPackage() {
 rm -rf ~/.ninjas/.hgrc
 rm -rf ~/.ninjas/.gitconfig
 
-packages=($(listPackages))
+() {
+    local packages=($(listPackages))
+    local package=""
 
-for package in $packages; do
-    loadPackage $package
-done
+    for package in $packages; do
+        loadPackage $package
+    done
+}
 
 compinit
