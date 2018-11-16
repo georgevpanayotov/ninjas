@@ -1,3 +1,8 @@
+if [[ "$NINJAS_PATH" == "" ]]; then
+    echo "Ninjas not loaded."
+    return
+fi
+
 loadPackage() {
     local package="$1"
 

@@ -2,7 +2,7 @@ if [[ -e ~/.ninjas/.path ]]; then
     export NINJAS_PATH=$(cat ~/.ninjas/.path)
 else
     echo "Ninjas not installed."
-    exit 1
+    return
 fi
 
 source $NINJAS_PATH/helpers.zsh
