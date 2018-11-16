@@ -1,11 +1,11 @@
 [user]
-	name = George Panayotov
-	email = georgep1245@gmail.com
+    name = George Panayotov
+    email = georgep1245@gmail.com
 [core]
-	excludesfile = /Users/george/.gitignore_global
+    excludesfile = /Users/george/.gitignore_global
 [diff]
-  tool=vimdiff
+    tool=vimdiff
 [merge]
-        tool = vimdiff
+    tool = vimdiff
 [status]
-	showUntrackedFiles = no
+    showUntrackedFiles = no

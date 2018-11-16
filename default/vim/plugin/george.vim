@@ -33,9 +33,9 @@ cnoremap \f <C-R>=expand("%</")<CR>
 
 
 function FormatGP()
-  let l:winview = winsaveview()
-  norm gg=G
-  call winrestview(l:winview)
+    let l:winview = winsaveview()
+    norm gg=G
+    call winrestview(l:winview)
 endfunction
 
 " highlighting
@@ -64,13 +64,13 @@ map \t :FZF<ENTER>
 
 
 if has('python')
-  execute 'pyfile ' . fnamemodify(resolve(expand('<sfile>:p')), ':h') . '/selectv.py'
-  map \c :pydo ChangeToCamelCase() <ENTER>
-  map \s :pydo ChangeToSnakeCase() <ENTER>
-  map \( :pydo WrapWord("(", ")") <ENTER>
-  map \{ :pydo WrapWord("{", "}") <ENTER>
-  map \[ :pydo WrapWord("[", "]") <ENTER>
-  map \" :pydo WrapWord("\"", "\"") <ENTER>
-  map \' :pydo WrapWord("'", "'") <ENTER>
-  map \< :pydo WrapWord("<", ">") <ENTER>
+    execute 'pyfile ' . fnamemodify(resolve(expand('<sfile>:p')), ':h') . '/selectv.py'
+    map \c :pydo ChangeToCamelCase() <ENTER>
+    map \s :pydo ChangeToSnakeCase() <ENTER>
+    map \( :pydo WrapWord("(", ")") <ENTER>
+    map \{ :pydo WrapWord("{", "}") <ENTER>
+    map \[ :pydo WrapWord("[", "]") <ENTER>
+    map \" :pydo WrapWord("\"", "\"") <ENTER>
+    map \' :pydo WrapWord("'", "'") <ENTER>
+    map \< :pydo WrapWord("<", ">") <ENTER>
 endif

@@ -16,16 +16,16 @@ For instance:
 
 The following files can be added to the package
 
-  zshrc # Sourced in .zshrc
-  zshenv # Sourced in .zshenv
-  gitconfig # Included in .gitconfig
-  hgrc # Included in .hgrc
-  vimpaths # Each line is added to vim's runtimepath
+    zshrc # Sourced in .zshrc
+    zshenv # Sourced in .zshenv
+    gitconfig # Included in .gitconfig
+    hgrc # Included in .hgrc
+    vimpaths # Each line is added to vim's runtimepath
 
 The following folders can be added to the package
 
-  bin # Added to $PATH
-  vim # Added to vim's runtimepath
-  zshfn # Added to fpath
+    bin # Added to $PATH
+    vim # Added to vim's runtimepath
+    zshfn # Added to fpath
 
 The first package to be loaded will be the "default" package that lives in the ninjas repo.

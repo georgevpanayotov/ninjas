@@ -1,9 +1,9 @@
 #!/bin/zsh
 
 if [[ "$1" == "" ]]; then
-  REG_NAME=\"
+    REG_NAME=\"
 else
-  REG_NAME="$1"
+    REG_NAME="$1"
 fi
 
 TEMP_FILE=~/$(uuidgen)
@@ -14,5 +14,5 @@ vim -c :normal\ \"${REG_NAME}p -c :wq $TEMP_FILE < /dev/tty > /dev/tty
 cat $TEMP_FILE
 
 TRAPEXIT() {
-  rm $TEMP_FILE
+    rm $TEMP_FILE
 }
