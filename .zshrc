@@ -18,12 +18,13 @@ loadPackage() {
 
     local hgRc="$package/hgrc"
     if [[ -e "$hgRc" ]]; then
+        createHgrcIfNeeded
         echo "%include $hgRc" >> ~/.ninjas/.hgrc
     fi
 
     local gitConfig="$package/gitconfig"
     if [[ -e "$gitConfig" ]]; then
-        maybeCreateGitConfig
+        createGitConfigIfNeeded
         echo "path = $gitConfig" >> ~/.ninjas/.gitconfig
     fi
 
