@@ -48,9 +48,3 @@ pvim() {
 update_dir
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# The following lines were added by compinstall
-zstyle :compinstall filename '/Users/george/.zshrc'
-
-autoload -Uz compinit
-# End of lines added by compinstall

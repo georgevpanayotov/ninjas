@@ -45,4 +45,7 @@ rm -rf ~/.ninjas/.gitconfig
     done
 }
 
+# Load this last so that any custom completions in any package are loaded.
+zstyle :compinstall filename '/Users/george/.zshrc'
+autoload -Uz compinit
 compinit
