@@ -11,6 +11,11 @@ alias exeunt=exit
 
 set -o emacs
 
+() {
+  local platZsh="$(uname).zsh"
+  (which $platZsh > /dev/null 2> /dev/null) && source $platZsh
+}
+
 # Update the prompt string to include the "prompt_header"
 # and set the screen's title if we're inside of a screen.
 update_dir() {
