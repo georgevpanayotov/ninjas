@@ -28,6 +28,10 @@ loadPackage() {
         echo "path = $gitConfig" >> ~/.ninjas/.gitconfig
     fi
 
+    # Load this again after setting the fpath so that any custom completions in the package are
+    # loaded.
+    compinit
+
     local rcScript="$package/zshrc"
     if [[ -f "$rcScript" ]]; then
         source "$rcScript"
@@ -38,6 +42,10 @@ rm -rf ~/.ninjas/.hgrc
 rm -rf ~/.ninjas/.gitconfig
 
 () {
+    zstyle :compinstall filename '/Users/george/.zshrc'
+    autoload -Uz compinit
+    compinit
+
     local packages=($(listPackages))
     local package=""
 
@@ -45,8 +53,3 @@ rm -rf ~/.ninjas/.gitconfig
         loadPackage $package
     done
 }
-
-# Load this last so that any custom completions in any package are loaded.
-zstyle :compinstall filename '/Users/george/.zshrc'
-autoload -Uz compinit
-compinit
