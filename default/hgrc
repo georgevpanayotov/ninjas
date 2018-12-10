@@ -12,9 +12,15 @@ vimdiff.executable = vim
 vimdiff.args = -d $output $local $base $other -c "wincmd J" -c '/^[<>=]/' -c 'normal n'
 vimdiff.premerge = keep
 
+[revsetalias]
+pubbase(a) = max(public()::a - draft())
+
 [alias]
 upsu=up --hidden "successors($1)"
 allpush=push -r "allsuccessors(obsolete())"
+gol=log -r 'pubbase($1) + min(pubbase($1)::$1 - pubbase($1))::'
+gl=ll -r 'pubbase($1) + min(pubbase($1)::$1 - pubbase($1))::'
+curr=st -n --rev 'pubbase(.)'
 
 [color]
 status.deleted = red bold underline
