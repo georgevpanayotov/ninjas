@@ -1,15 +1,29 @@
 #!/bin/zsh
 
+TRAPINT() {
+  tput rmcup
+  return $((128+$1))
+}
+
 if [[ "$SCREEN_CMD" == "" ]]; then
     SCREEN_CMD=screen
 fi
 
 if [[ "$1" != "" ]]; then
     saved_state=$(stty -g)
+    tput smcup
 
-    ssh -t "$1" "$SCREEN_CMD -rx \${USER}_scr" || (failed=$?; tput rmcup; echo "ssh failed with $failed")
+    ssh -t "$1" "$SCREEN_CMD -rx \${USER}_scr"
+    ssh_status=$?
+
+    tput rmcup
     stty -raw
     stty $saved_state
+
+    if [[ $ssh_status -ne 0 ]]; then
+      echo "ssh failed with $ssh_status"
+    fi
+
 else
     $SCREEN_CMD -rx ${USER}_scr
 fi
