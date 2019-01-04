@@ -14,6 +14,7 @@ vimdiff.premerge = keep
 
 [revsetalias]
 pubbase(a) = max(public()::a - draft())
+today = date("today") & draft()
 
 [alias]
 upsu=up --hidden "successors($1)"
