@@ -73,4 +73,13 @@ if has('python')
     map \" :pydo WrapWord("\"", "\"") <ENTER>
     map \' :pydo WrapWord("'", "'") <ENTER>
     map \< :pydo WrapWord("<", ">") <ENTER>
+
+    execute 'pyfile ' . fnamemodify(resolve(expand('<sfile>:p')), ':h') . '/tedium.py'
+
+    function TediumInit(name)
+      pydo tediumInit(vim.eval("a:name"))
+    endfunction
+
+    command -nargs=1 Tedi :call TediumInit(<f-args>)
+    command Ted :pydo tediumNext()
 endif
