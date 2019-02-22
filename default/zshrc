@@ -39,6 +39,10 @@ pvim() {
     vim $@ -c "setlocal buftype=nofile" -c "setlocal bufhidden=hide" -c "setlocal noswapfile" -
 }
 
+svim() {
+    vim $@ -c "setlocal buftype=nofile" -c "setlocal bufhidden=hide" -c "setlocal noswapfile"
+}
+
 () {
     if [[ "$SCREEN_CMD" == "" ]]; then
         local SCREEN_CMD=screen
