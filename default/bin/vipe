@@ -1,5 +1,16 @@
 #!/bin/zsh
 
+
+TRAPEXIT() {
+  if [[ "$TMP_FILE" != "" && -f "$TMP_FILE" ]]; then
+    rm $TMP_FILE > /dev/null 2> /dev/null
+  fi
+}
+
+TRAPINT() {
+  # If defined, guarantees that TRAPEXIT is called when we kill via ^C
+}
+
 # Pick temp file.
 TMP_FILE=$HOME/$(uuidgen)
 
@@ -10,5 +21,4 @@ cat > $TMP_FILE
 vim $TMP_FILE < /dev/tty > /dev/tty
 
 # Print out the edited temp file. And then delete it.
-# TODO: Trap aborts so we don't leak files.
-cat $TMP_FILE && (rm $TMP_FILE > /dev/null 2> /dev/null)
+cat $TMP_FILE
