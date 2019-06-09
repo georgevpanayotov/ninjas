@@ -1,8 +1,8 @@
 #!/bin/zsh
 
 TRAPINT() {
-  tput rmcup
-  return $((128+$1))
+    tput rmcup
+    return $((128+$1))
 }
 
 if [[ "$SCREEN_CMD" == "" ]]; then
@@ -21,7 +21,7 @@ if [[ "$1" != "" ]]; then
     stty $saved_state
 
     if [[ $ssh_status -ne 0 ]]; then
-      echo "ssh failed with $ssh_status"
+        echo "ssh failed with $ssh_status"
     fi
 
 else

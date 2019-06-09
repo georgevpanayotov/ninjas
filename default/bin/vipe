@@ -2,13 +2,13 @@
 
 
 TRAPEXIT() {
-  if [[ "$TMP_FILE" != "" && -f "$TMP_FILE" ]]; then
-    rm $TMP_FILE > /dev/null 2> /dev/null
-  fi
+    if [[ "$TMP_FILE" != "" && -f "$TMP_FILE" ]]; then
+        rm $TMP_FILE > /dev/null 2> /dev/null
+    fi
 }
 
 TRAPINT() {
-  # If defined, guarantees that TRAPEXIT is called when we kill via ^C
+    # If defined, guarantees that TRAPEXIT is called when we kill via ^C
 }
 
 # Pick temp file.
