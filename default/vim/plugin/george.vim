@@ -75,6 +75,7 @@ if has('python')
     map \" :pydo WrapWord("\"", "\"") <ENTER>
     map \' :pydo WrapWord("'", "'") <ENTER>
     map \< :pydo WrapWord("<", ">") <ENTER>
+    map \` :pydo WrapWord("`", "`") <ENTER>
 
     execute 'pyfile ' . fnamemodify(resolve(expand('<sfile>:p')), ':h') . '/tedium.py'
 
