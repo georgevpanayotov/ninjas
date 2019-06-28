@@ -8,6 +8,7 @@ bindkey ';5C' forward-word
 
 alias jerbs=jobs
 alias exeunt=exit
+alias dirs=dirs\ -p
 
 set -o emacs
 
