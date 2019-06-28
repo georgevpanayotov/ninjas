@@ -13,7 +13,7 @@ set number
 set ruler
 set si
 set nosmarttab
-set nohidden
+set hidden
 set sw=4
 set ts=4
 set t_Co=256
