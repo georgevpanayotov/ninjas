@@ -38,6 +38,13 @@ function FormatGP()
     call winrestview(l:winview)
 endfunction
 
+function GPFilter()
+    normal qjq
+    g//y J
+    v//y J
+    normal ggVG"Jpggdd
+endfunction
+
 " highlighting
 " syntax on except for diffs. In the case of diffs,
 " often the hightlighting for the diff clashes with the syntax
