@@ -54,7 +54,6 @@ if &diff | syntax off | endif
 
 highlight TabColor ctermbg=green guibg=green ctermfg=black guifg=black
 highlight ColorColumn ctermbg=red guibg=red
-highlight DiffAdd ctermfg=white guifg=white
 
 command CommentStrip :g/^[^:]*:\d\+\(:\d\+\)\?:\s*\/\//d
 command Itch :vnew|setlocal buftype=nofile|setlocal bufhidden=hide|setlocal noswapfile
