@@ -1,4 +1,5 @@
 import vim
+import random
 
 # TODO: Split along word boundaries.
 # TODO: Handle multiline/block selection.
@@ -107,3 +108,21 @@ def ChangeToSpongeBobCase():
         return spongeBob
 
     ChangeSelection(SpongeBobFunctor)
+
+# THis isn'T A prODuCTiVE Use OF yoUR TiMe.
+def ChangeToRandomCase():
+
+    def RandomFunctor(original):
+        random.seed()
+        randomCase = ""
+        for c in original:
+            if c.isalpha():
+                if random.randrange(2) == 0:
+                    randomCase = randomCase + c.upper()
+                else:
+                    randomCase = randomCase + c.lower()
+            else:
+                randomCase = randomCase + c
+        return randomCase
+
+    ChangeSelection(RandomFunctor)
