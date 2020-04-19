@@ -12,7 +12,7 @@ function UpdateMatches(width)
                 :call UnsetMatches()
                 :call SetMatches(a:width)
             endif
-        else
+        elseif a:width != 0
             :call SetMatches(a:width)
         endif
     elseif exists('w:matches_created')
