@@ -74,22 +74,22 @@ map \t :FZF<ENTER>
 
 if has('python')
     execute 'pyfile ' . fnamemodify(resolve(expand('<sfile>:p')), ':h') . '/selectv.py'
-    map \c :pydo ChangeToCamelCase() <ENTER>
-    map \s :pydo ChangeToSnakeCase() <ENTER>
-    map \( :pydo WrapWord("(", ")") <ENTER>
-    map \{ :pydo WrapWord("{", "}") <ENTER>
-    map \[ :pydo WrapWord("[", "]") <ENTER>
-    map \" :pydo WrapWord("\"", "\"") <ENTER>
-    map \' :pydo WrapWord("'", "'") <ENTER>
-    map \< :pydo WrapWord("<", ">") <ENTER>
-    map \` :pydo WrapWord("`", "`") <ENTER>
+    map \c :py ChangeToCamelCase() <ENTER>
+    map \s :py ChangeToSnakeCase() <ENTER>
+    map \( :py WrapWord("(", ")") <ENTER>
+    map \{ :py WrapWord("{", "}") <ENTER>
+    map \[ :py WrapWord("[", "]") <ENTER>
+    map \" :py WrapWord("\"", "\"") <ENTER>
+    map \' :py WrapWord("'", "'") <ENTER>
+    map \< :py WrapWord("<", ">") <ENTER>
+    map \` :py WrapWord("`", "`") <ENTER>
 
     execute 'pyfile ' . fnamemodify(resolve(expand('<sfile>:p')), ':h') . '/tedium.py'
 
     function TediumInit(name)
-        pydo tediumInit(vim.eval("a:name"))
+        py tediumInit(vim.eval("a:name"))
     endfunction
 
     command -nargs=1 Tedi :call TediumInit(<f-args>)
-    command Ted :pydo tediumNext()
+    command Ted :py tediumNext()
 endif
