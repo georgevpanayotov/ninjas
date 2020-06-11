@@ -93,4 +93,15 @@ if has('python')
     map \' :py WrapWord("'", "'") <ENTER>
     map \< :py WrapWord("<", ">") <ENTER>
     map \` :py WrapWord("`", "`") <ENTER>
+elseif has('python3')
+    execute 'py3file ' . fnamemodify(resolve(expand('<sfile>:p')), ':h') . '/selectv.py'
+    map \c :py3 ChangeToCamelCase() <ENTER>
+    map \s :py3 ChangeToSnakeCase() <ENTER>
+    map \( :py3 WrapWord("(", ")") <ENTER>
+    map \{ :py3 WrapWord("{", "}") <ENTER>
+    map \[ :py3 WrapWord("[", "]") <ENTER>
+    map \" :py3 WrapWord("\"", "\"") <ENTER>
+    map \' :py3 WrapWord("'", "'") <ENTER>
+    map \< :py3 WrapWord("<", ">") <ENTER>
+    map \` :py3 WrapWord("`", "`") <ENTER>
 endif
