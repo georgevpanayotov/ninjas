@@ -12,7 +12,7 @@ function UpdateMatches(width)
                 :call UnsetMatches()
                 :call SetMatches(a:width)
             endif
-        else
+        elseif a:width != 0
             :call SetMatches(a:width)
         endif
     elseif exists('w:matches_created')
@@ -41,8 +41,8 @@ function UnsetMatches()
     :call matchdelete(w:trailingMatch)
     :call matchdelete(w:colorColumnMatch)
 
+    let w:width = 0
     unlet w:matches_created
-    unlet w:width
     unlet w:tabMatch
     unlet w:trailingMatch
     unlet w:colorColumnMatch
@@ -56,7 +56,9 @@ endfunction
 " Helper to simplify the au.
 function Matches_au()
     if exists('w:width')
-        :call UpdateMatches(w:width)
+        if w:width != 0
+            :call UpdateMatches(w:width)
+        endif
     else
         :call UpdateMatches(g:default_width)
     endif

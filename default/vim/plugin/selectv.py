@@ -1,9 +1,6 @@
 import vim
 import random
 
-# TODO: Split along word boundaries.
-# TODO: Handle multiline/block selection.
-
 
 class Selection:
 
@@ -18,33 +15,65 @@ def GetVisualSelection():
     lineEnd, columnEnd = vim.eval("getpos(\"'>\")[1:2]")
 
     return Selection(
-        vim.eval("mode()"), (int(lineStart) - 1, int(columnStart) - 1),
+        vim.eval("visualmode()"), (int(lineStart) - 1, int(columnStart) - 1),
         (int(lineEnd) - 1, int(columnEnd) - 1))
 
 
 def ChangeSelection(changeFunctor):
     selection = GetVisualSelection()
 
-    if selection.end[0] != selection.start[0]:
-        vim.command(
-            ":echoerr \"ChangeSelection Only valid for single line selection.\"")
-    else:
-        lineNumber = selection.end[0]
+    if selection.mode == "v":
+        ChangeVisualSelection(selection, changeFunctor)
+    elif selection.mode == "V":
+        ChangeVisualLineSelection(selection, changeFunctor)
+    elif selection.mode == "":
+        ChangeVisualBlockSelection(selection, changeFunctor)
+
+    line, column = selection.start
+    # Vim's cursor position is wacky. The line numbers start at 1 and the column
+    # numbers start at 0.
+    vim.current.window.cursor = (line + 1, column)
+
+# Standard visual mode selection. Goes from start to end following the regular flow of the line.
+# Therefore, we only respect the start column on the starting line and the end column on the ending
+# line. Every line in between is fully changed.
+def ChangeVisualSelection(selection, changeFunctor):
+    for lineNumber in range(selection.start[0], selection.end[0] + 1):
         line = vim.current.buffer[lineNumber]
+        if lineNumber == selection.start[0]:
+            start = selection.start[1]
+        else:
+            start = 0
 
-        changed = changeFunctor(line[selection.start[1]:selection.end[1] + 1])
+        if lineNumber == selection.end[0]:
+            end = selection.end[1]
+        else:
+            end = len(line)
 
-        prefix = line[:selection.start[1]]
-        suffix = line[selection.end[1] + 1:]
+        vim.current.buffer[lineNumber] = ChangeSubString(line, start, end, changeFunctor)
 
-        line = prefix + changed + suffix
+# Visual line selection covers the whole line. Therefore change every line completely.
+def ChangeVisualLineSelection(selection, changeFunctor):
+    for lineNumber in range(selection.start[0], selection.end[0] + 1):
+        vim.current.buffer[lineNumber] = changeFunctor(vim.current.buffer[lineNumber])
 
-        vim.current.buffer[lineNumber] = line
-        line, column = selection.start
-        # Vim's cursor position is wacky. The line numbers start at 1 and the column
-        # numbers start at 0.
-        vim.current.window.cursor = (line + 1, column)
+# Visual block selection covers a (roughly) rectangular section. Therefore respect the start/end
+# columns for each line.
+def ChangeVisualBlockSelection(selection, changeFunctor):
+    for lineNumber in range(selection.start[0], selection.end[0] + 1):
+        line = vim.current.buffer[lineNumber]
+        start = selection.start[1]
+        end = selection.end[1]
 
+        vim.current.buffer[lineNumber] = ChangeSubString(line, start, end, changeFunctor)
+
+def ChangeSubString(line, start, end, changeFunctor):
+    changed = changeFunctor(line[start:end + 1])
+
+    prefix = line[:start]
+    suffix = line[end + 1:]
+
+    return prefix + changed + suffix
 
 def ChangeToCamelCase():
 

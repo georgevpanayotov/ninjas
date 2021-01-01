@@ -1,16 +1,15 @@
 unsetopt beep
 setopt inc_append_history
 
-bindkey -e
-bindkey ^x accept-search
-bindkey ';5D' backward-word
-bindkey ';5C' forward-word
+bindkey -v
+
+# By default, in vi mode, backspace only deletes characters that have been typed since entering
+# insert mode. This allows backspace to delete without constraint.
+bindkey -M viins "^?" backward-delete-char
 
 alias jerbs=jobs
 alias exeunt=exit
 alias dirs=dirs\ -p
-
-set -o emacs
 
 () {
     local platZsh;platZsh="$(uname).zsh"
