@@ -4,25 +4,25 @@ if [[ "$NINJAS_PATH" == "" ]]; then
 fi
 
 loadPackage() {
-    local package="$1"
+    local package;package="$1"
 
-    local fnPath="$package/zshfn"
+    local fnPath;fnPath="$package/zshfn"
     if [[ -d "$fnPath" ]]; then
         fpath[1,0]=("$fnPath")
     fi
 
-    local binPath="$package/bin"
+    local binPath;binPath="$package/bin"
     if [[ -d "$binPath" ]]; then
         PATH="$binPath:$PATH"
     fi
 
-    local hgRc="$package/hgrc"
+    local hgRc;hgRc="$package/hgrc"
     if [[ -e "$hgRc" ]]; then
         createHgrcIfNeeded
         echo "%include $hgRc" >> ~/.ninjas/.hgrc
     fi
 
-    local gitConfig="$package/gitconfig"
+    local gitConfig;gitConfig="$package/gitconfig"
     if [[ -e "$gitConfig" ]]; then
         createGitConfigIfNeeded
         echo "path = $gitConfig" >> ~/.ninjas/.gitconfig
@@ -32,7 +32,7 @@ loadPackage() {
     # loaded.
     compinit
 
-    local rcScript="$package/zshrc"
+    local rcScript;rcScript="$package/zshrc"
     if [[ -f "$rcScript" ]]; then
         source "$rcScript"
     fi
@@ -46,8 +46,8 @@ rm -rf ~/.ninjas/.gitconfig
     autoload -Uz compinit
     compinit
 
-    local packages=($(listPackages))
-    local package=""
+    local packages;packages=($(listPackages))
+    local package;package=""
 
     for package in $packages; do
         loadPackage $package

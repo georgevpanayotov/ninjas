@@ -13,14 +13,14 @@ alias dirs=dirs\ -p
 set -o emacs
 
 () {
-    local platZsh="$(uname).zsh"
+    local platZsh;platZsh="$(uname).zsh"
     (which $platZsh > /dev/null 2> /dev/null) && source $platZsh
 }
 
 # Update the prompt string to include the "prompt_header"
 # and set the screen's title if we're inside of a screen.
 update_dir() {
-    local PROMPT_HEADER="$(prompt_header.py)"
+    local PROMPT_HEADER;PROMPT_HEADER="$(prompt_header.py)"
     PS1=" ## $PROMPT_HEADER%c $ "
     if [[ "$STY" != "" ]]; then
         stitle.sh
@@ -46,7 +46,7 @@ svim() {
 
 () {
     if [[ "$SCREEN_CMD" == "" ]]; then
-        local SCREEN_CMD=screen
+        local SCREEN_CMD;SCREEN_CMD=screen
     fi
 
     if [[ $(screen -ls | grep -i ${USER}_scr | wc -l) -eq 0 ]]; then

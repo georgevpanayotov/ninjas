@@ -8,8 +8,8 @@ fi
 source $NINJAS_PATH/helpers.zsh
 
 () {
-    local packages=($(listPackages))
-    local package=""
+    local packages;packages=($(listPackages))
+    local package;package=""
 
     for package in $packages; do
         envScript="$package/zshenv"
