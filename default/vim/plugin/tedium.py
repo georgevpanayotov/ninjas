@@ -3,6 +3,7 @@
 import sys
 import re
 import os
+import enum
 
 SOURCE_LOCATION = os.getenv("HOME") + "/.tedium/"
 
@@ -21,7 +22,8 @@ def tediumNext():
     vim.vars["ted_cursor"] = tedium.cursor
 
 
-class TediumActions:
+@enum.unique
+class TediumActions(enum.Enum):
     END = 1
     REGEX = 2
     REGEX_END = 3
