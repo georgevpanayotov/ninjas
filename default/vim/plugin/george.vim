@@ -63,6 +63,16 @@ au FileType objc,objcpp,cpp,proto setlocal equalprg=clang-format\ -style=file\ -
 au FileType cpp call UpdateMatches(80)
 au FileType gitcommit,hgcommit call UpdateMatches(72)
 au FileType make setlocal noet
+au FileType java setlocal foldmethod=expr
+au FileType java setlocal foldexpr=JavaImport(v:lnum)
+
+function JavaImport(lnum)
+  if getline(a:lnum)=~"^import" || (getline(a:lnum - 1)=~"^import" && getline(a:lnum + 1)=~"^import" && getline(a:lnum)=~"^s*$")
+    return 1
+  endif
+
+  return 0
+endfunction
 
 au BufRead *.swift set filetype=swift
 au BufNewFile *.swift set filetype=swift
