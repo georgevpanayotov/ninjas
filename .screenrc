@@ -4,4 +4,4 @@ defscrollback 50000
 attrcolor b ".I"
 termcapinfo xterm 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
 defbce "on"
-caption always "%?%P%{.R.}[COPY]%{-}%?%?%E%{.R.}[ESC]%? %{Gk} %n %{Yk} [%H]%=%{Wk} %W"
+caption always "%?%P%{.R.}[COPY]%{-}%?%?%E%{.R.}[ESC]%{-}%? %{Gk} %n %{Yk} [%H]%=%{Wk} %W"
