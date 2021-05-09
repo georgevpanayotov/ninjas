@@ -60,6 +60,7 @@ command Itch :vnew|setlocal buftype=nofile|setlocal bufhidden=hide|setlocal nosw
 command Malkovich :%s/\<[[:alnum:]_]*\>/Malkovich!/g
 
 au FileType objc,objcpp,cpp,proto setlocal equalprg=clang-format\ -style=file\ -assume-filename=%
+au FileType kotlin setlocal equalprg=ktlint\ --stdin\ -F
 au FileType cpp call UpdateMatches(80)
 au FileType gitcommit,hgcommit call UpdateMatches(72)
 au FileType make setlocal noet
