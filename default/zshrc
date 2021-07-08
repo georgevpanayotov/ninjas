@@ -53,6 +53,27 @@ svim() {
     fi
 }
 
+# Inserts the parameter into the buffer at the current cursor's location. Moves the cursor to the
+# end of the inserted token.
+insert_in_buffer() {
+  local selected=$1
+
+  if [[ "$selected" != "" ]]; then
+    local pre=$BUFFER[1,$CURSOR]
+    local post=$BUFFER[$(($CURSOR + 1)),$#BUFFER]
+    if [[ "$pre[$#pre]" != " " ]]; then
+      pre="$pre "
+    fi
+    if [[ "$post" != "" && "$post[1]" != " " ]]; then
+      post=" $post"
+    fi
+
+    BUFFER="$pre$selected$post"
+    CURSOR=$(( $#pre + $#selected ))
+  fi
+}
+
+
 # Update the prompt and screen title at startup.
 update_dir
 
