@@ -30,6 +30,7 @@ nnoremap <silent> \\ :nohls<CR>
 nnoremap <silent> \= :call FormatGP()<ENTER>
 cnoremap \h <C-R>=expand("%:h/")<CR>
 cnoremap \f <C-R>=expand("%</")<CR>
+nnoremap <silent> \n :let @f=expand('%')<CR>
 
 
 function FormatGP()
