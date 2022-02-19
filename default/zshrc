@@ -32,7 +32,15 @@ chpwd() {
 }
 
 zshaddhistory() {
-    echo -n $1 >> ~/.zshpermanenthistory
+    if [[ "$1" == $'incognito\n' ]]; then
+        return 1
+    fi
+
+    if (( ! INCOGNITO )); then
+        echo -n $1 >> ~/.zshpermanenthistory
+    else
+        return 1
+    fi
 }
 
 pvim() {
@@ -73,6 +81,13 @@ insert_in_buffer() {
   fi
 }
 
+incognito() {
+    INCOGNITO=1
+}
+
+uncognito() {
+    INCOGNITO=0
+}
 
 # Update the prompt and screen title at startup.
 update_dir
