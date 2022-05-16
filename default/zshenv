@@ -3,11 +3,10 @@ HISTSIZE=10000
 SAVEHIST=1000
 
 # Useful defines
-PATH=$PATH:~/bin
+PATH=$PATH:~/bin:~/usr/bin
 TERM=xterm-256color
 
 export EDITOR=vim
 
 export FZF_CTRL_T_COMMAND=fzf_cmd.sh
 export FZF_DEFAULT_COMMAND=fzf_cmd.sh
-export LC_COLLATE=en_US.ASCII
