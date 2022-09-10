@@ -56,8 +56,13 @@ svim() {
         local SCREEN_CMD=screen
     fi
 
-    if [[ $(screen -ls | grep -i ${USER}_scr | wc -l) -eq 0 ]]; then
+    if [[ $(screen -ls | grep -i ${USER}_scr | grep -v "Dead ?" | wc -l) -eq 0 ]]; then
         $SCREEN_CMD -d -m -S ${USER}_scr
+    fi
+
+    if [[ $(screen -ls | grep "Dead ?" | wc -l) -ne 0 && "$STY" == "" ]]; then
+        echo "Dead screen detected."
+        screen -ls | grep "Dead ?"
     fi
 }
 
