@@ -3,6 +3,14 @@ if [[ "$NINJAS_PATH" == "" ]]; then
     return
 fi
 
+preLoadPackage() {
+    local package="$1"
+    local preExecScript="$package/prezshrc"
+    if [[ -f "$preExecScript" ]]; then
+        source "$preExecScript" 
+    fi
+}
+
 loadPackage() {
     local package="$1"
 
@@ -48,6 +56,10 @@ rm -rf ~/.ninjas/.gitconfig
 
     local packages=($(listPackages))
     local package=""
+
+    for package in $packages; do
+        preLoadPackage $package
+    done
 
     for package in $packages; do
         loadPackage $package
