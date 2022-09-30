@@ -20,7 +20,11 @@ alias dirs=dirs\ -p
 # and set the screen's title if we're inside of a screen.
 update_dir() {
     local PROMPT_HEADER="$(prompt_header.py)"
-    PS1=" ## $PROMPT_HEADER%c $ "
+    local INCOGNITO_PROMPT=""
+    if (( $INCOGNITO )); then
+        INCOGNITO_PROMPT="[i]"
+    fi
+    PS1=" ##$INCOGNITO_PROMPT $PROMPT_HEADER%c $ "
     if [[ "$STY" != "" ]]; then
         stitle.sh
     fi
@@ -88,10 +92,12 @@ insert_in_buffer() {
 
 incognito() {
     INCOGNITO=1
+    update_dir
 }
 
 uncognito() {
     INCOGNITO=0
+    update_dir
 }
 
 # Update the prompt and screen title at startup.
