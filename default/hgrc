@@ -6,6 +6,7 @@ merge = vimdiff
 [extensions]
 extdiff =
 strip =
+rebase =
 
 [merge-tools]
 vimdiff.executable = vim
