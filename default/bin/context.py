@@ -41,6 +41,7 @@ class FileRecord:
   # Adds a range that is centered around the position.
   def addRange(self, rangeRecord, position):
     if self.lastPosition is not None and self.lastPosition >= position:
+      # NOTE: This is not possible anymore because we sort input.
       raise InputError("Line numbers are expected to be in ascending order.")
 
     self.lastPosition = position
@@ -83,11 +84,15 @@ class FileRecord:
     fileHandle.close()
 
 
+def sortKey(entry):
+  line, newFileName, number = entry
+  return newFileName, number
+
 def main(inFile, outFile):
   fileRecord = None
   fileName = None
 
-  for line, newFileName, number in generate_filenames.fileNames(inFile):
+  for line, newFileName, number in sorted(generate_filenames.fileNames(inFile), key=sortKey):
     if newFileName != fileName:
       if fileRecord is not None:
         fileRecord.printContextualLines(outFile)
