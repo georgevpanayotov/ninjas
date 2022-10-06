@@ -4,6 +4,8 @@ import sys
 import re
 import generate_filenames
 
+from functools import cmp_to_key
+
 # TODO: Automate some tests?
 # TODO: Options:
 #   Omit leading filename/linenumbers and just do one per block.
@@ -83,16 +85,47 @@ class FileRecord:
       pass
     fileHandle.close()
 
+# Some lines returned by grep don't have a filename, (e.g. "Binary file matches") those lines would
+# be "None". Those should sort ahead of any real filenames. This method returns None if both lines
+# have filenames (i.e. it defers further sorting to other methods).
+def compFileName(leftEntry, rightEntry):
+  leftLine, leftFileName, leftNumber = leftEntry
+  rightLine, rightFileName, rightNumber = rightEntry
 
-def sortKey(entry):
-  line, newFileName, number = entry
-  return newFileName, number
+  if leftFileName is None and rightFileName is None:
+    return leftLine - rightLine
+  elif leftFileName is None:
+    return -1
+  elif rightFileName is None:
+    return 1
+  else:
+    # Both are real lines so we defer deciding comparison.
+    return None
+
+def compEntry(leftEntry, rightEntry):
+  leftLine, leftFileName, leftNumber = leftEntry
+  rightLine, rightFileName, rightNumber = rightEntry
+
+  comparison = compFileName(leftEntry, rightEntry)
+
+  if comparison is not None:
+    return comparison
+
+  # These are both matching lines so we can sort them. First by name then line number.
+  if leftFileName < rightFileName:
+    return -1
+  elif leftFileName > rightFileName:
+    return 1
+  else:
+    return leftNumber - rightNumber
+
 
 def main(inFile, outFile):
   fileRecord = None
   fileName = None
 
-  for line, newFileName, number in sorted(generate_filenames.fileNames(inFile), key=sortKey):
+  for line, newFileName, number in sorted(generate_filenames.fileNames(inFile), key = \
+      cmp_to_key(compEntry)):
     if newFileName != fileName:
       if fileRecord is not None:
         fileRecord.printContextualLines(outFile)
