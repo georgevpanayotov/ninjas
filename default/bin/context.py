@@ -9,9 +9,32 @@ from functools import cmp_to_key
 # TODO: Automate some tests?
 # TODO: Options:
 #   Omit leading filename/linenumbers and just do one per block.
-#   Configure how wide a contextual area.
-#   Debug mode that uses printRanges()
 
+DEFAULT_COUNT = 3
+
+class Args:
+  @staticmethod
+  def parse(argv):
+    i = 1
+    count = DEFAULT_COUNT
+    printRanges = False
+
+    while i < len(argv):
+      if argv[i] == '-c':
+        i = i + 1
+        count = int(argv[i])
+      elif argv[i] == '-r':
+        printRanges = True
+      else:
+        print("Error: unexpected arg: " + argv[i])
+        return None
+      i = i + 1
+
+    args = Args()
+    args.count = count
+    args.printRanges = printRanges
+
+    return args
 
 class InputError(Exception):
 
@@ -59,12 +82,18 @@ class FileRecord:
     if rangeRecord is not None:
       self.ranges.append(rangeRecord)
 
-  def printRanges(self, outFile):
+  def print(self, outFile, args):
+    if args.printRanges:
+      self._printRanges(outFile)
+    else:
+      self._printContextualLines(outFile)
+
+  def _printRanges(self, outFile):
     outFile.write(self.fileName + "\n")
     for currentRange in self.ranges:
       outFile.write(str(currentRange) + "\n")
 
-  def printContextualLines(self, outFile):
+  def _printContextualLines(self, outFile):
     if len(self.ranges) == 0:
       return
 
@@ -120,7 +149,10 @@ def compEntry(leftEntry, rightEntry):
     return leftNumber - rightNumber
 
 
-def main(inFile, outFile):
+def main(inFile, outFile, args):
+  if args is None:
+    return
+
   fileRecord = None
   fileName = None
 
@@ -128,7 +160,7 @@ def main(inFile, outFile):
       cmp_to_key(compEntry)):
     if newFileName != fileName:
       if fileRecord is not None:
-        fileRecord.printContextualLines(outFile)
+        fileRecord.print(outFile, args)
 
       if newFileName is not None:
         fileRecord = FileRecord(newFileName)
@@ -137,14 +169,13 @@ def main(inFile, outFile):
 
     fileName = newFileName
     if fileRecord is not None:
-      # TODO: `3` should be configurable.
-      fileRecord.addRange(RangeRecord(number - 3, number + 3), number)
+      fileRecord.addRange(RangeRecord(number - args.count, number + args.count), number)
     else:
       outFile.write(line)
 
   if fileRecord is not None:
-    fileRecord.printContextualLines(outFile)
+    fileRecord.print(outFile, args)
 
 
 if __name__ == "__main__":
-  main(sys.stdin, sys.stdout)
+  main(sys.stdin, sys.stdout, Args.parse(sys.argv))
