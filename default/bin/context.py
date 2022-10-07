@@ -122,7 +122,8 @@ def compFileName(leftEntry, rightEntry):
   rightLine, rightFileName, rightNumber = rightEntry
 
   if leftFileName is None and rightFileName is None:
-    return leftLine - rightLine
+    # Treat these as equal. Python sorts are stable so they'll be printed in the input order.
+    return 0
   elif leftFileName is None:
     return -1
   elif rightFileName is None:
