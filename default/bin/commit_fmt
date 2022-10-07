@@ -21,6 +21,8 @@ def countLeadingWhite(rawLine):
     return len(rawLine) - len(rawLine.lstrip())
 
 
+# Counts the leading space. This is either all of the whitespace at the start of the line or the
+# list entry character ('*' or '-') followed by the spaces after it.
 def countLeading(rawLine):
     if rawLine[0].isspace():
         return countLeadingWhite(rawLine)
@@ -30,9 +32,12 @@ def countLeading(rawLine):
         return 0
 
 
+# rawLine must not be empty.
 def isListEntry(rawLine):
     return rawLine[0].isspace() or rawLine[0] == '-' or rawLine[0] == '*'
 
+def isComment(rawLine):
+    return rawLine[0:3] == 'HG:' or rawLine[0:1] == '#'
 
 def split(paragraph):
     if len(paragraph) == 0:
@@ -74,16 +79,19 @@ def reflow(lines):
     for i, rawLine in enumerate(lines):
         line = rawLine.strip()
 
-        if len(line) == 0 or isListEntry(rawLine):
+        if len(line) == 0 or isListEntry(rawLine) or isComment(rawLine):
             split(paragraph)
             paragraph = ""
 
             if len(line) == 0:
                 sys.stdout.write("\n")
-                continue
+            elif isComment(rawLine):
+                sys.stdout.write(rawLine)
             else:
                 split(rawLine.rstrip())
-                continue
+
+            # This line already handled. No need to be part of a paragraph.
+            continue
 
         if len(paragraph) != 0:
             line = " " + line
@@ -93,23 +101,36 @@ def reflow(lines):
 
     split(paragraph)
 
-
-def main():
-    line = sys.stdin.readline()
+def readAndValidate(lines, isValid):
+    line = next(lines)
     line = line.strip()
-    if len(line) > LINE_LENGTH:
-        print("Error: first line must be length " + str(LINE_LENGTH) + " or less.")
+    if not isValid(line):
         exit(1)
     sys.stdout.write(line)
     sys.stdout.write("\n")
 
-    line = sys.stdin.readline()
-    line = line.strip()
+def validFirstLine(line):
+    if len(line) > LINE_LENGTH:
+        print("Error: first line must be length " + str(LINE_LENGTH) + " or less.")
+        return False
+    return True
+
+def validSecondLine(line):
     if len(line) > 0:
         print("Error: second line must be blank.")
-        exit(2)
-    sys.stdout.write(line)
-    sys.stdout.write("\n")
+        return False
+    return True
+
+def main():
+    try:
+        readAndValidate(sys.stdin, validFirstLine)
+    except StopIteration:
+        print("Error: empty commit.")
+        exit(1)
+    try:
+        readAndValidate(sys.stdin, validSecondLine)
+    except StopIteration:
+        return # No problem, one line commits are ok
 
     reflow(sys.stdin)
 
