@@ -64,6 +64,7 @@ au FileType objc,objcpp,cpp,proto setlocal equalprg=clang-format\ -style=file\ -
 au FileType kotlin setlocal equalprg=ktlint\ --stdin\ -F
 au FileType cpp call UpdateMatches(80)
 au FileType gitcommit,hgcommit call UpdateMatches(72)
+au FileType gitcommit,hgcommit setlocal equalprg=commit_fmt
 au FileType make setlocal noet
 au FileType java setlocal foldmethod=expr
 au FileType java setlocal foldexpr=JavaImport(v:lnum)

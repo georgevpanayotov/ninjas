@@ -1,0 +1,118 @@
+#!/usr/bin/python3
+
+import sys
+
+LINE_LENGTH = 72
+
+# Format a commit message according to well established practices:
+#     We want 1 line to start that is 72 characters or less.
+#     Followed by a blank line.
+#     Followed by multiple paragraph style blocks (max 72 characters each).
+# This means that a short-log will see a 1 line summary of each change.
+#
+# Behavior:
+# The first line will have leading and trailing spaces trimmed. Subsequent lines will only have
+# trailing space trimmed.
+# Paragraphs reflow so 2 short lines will be combined. To avoid this, insert a blank line. Lines
+# that start with whitespace, '*', or '-' are treated as list entries. They don't combine with lines
+# around them and if they have to be reflowed, subsequent lines get indented to the same level.
+
+def countLeadingWhite(rawLine):
+    return len(rawLine) - len(rawLine.lstrip())
+
+
+def countLeading(rawLine):
+    if rawLine[0].isspace():
+        return countLeadingWhite(rawLine)
+    elif rawLine[0] == '-' or rawLine[0] == '*':
+        return 1 + countLeadingWhite(rawLine[1:])
+    else:
+        return 0
+
+
+def isListEntry(rawLine):
+    return rawLine[0].isspace() or rawLine[0] == '-' or rawLine[0] == '*'
+
+
+def split(paragraph):
+    if len(paragraph) == 0:
+        return
+    # NOTE: Assuming that leading is less than LINE_LENGTH
+    leading = countLeading(paragraph)
+
+    word = ""
+    words = []
+    for c in paragraph[leading:]:
+        if c.isspace() and len(word) > 0:
+            words.append(word)
+            word = ""
+        else:
+            word = word + c
+    words.append(word)
+
+    lineCount = leading
+    sys.stdout.write(paragraph[0:leading])
+
+    for word in words:
+        # NOTE: we only preserve leading whitespace. Other whitespace gets collapsed into a single
+        # space character.
+        if lineCount + 1 + len(word) > LINE_LENGTH:
+            sys.stdout.write("\n")
+            sys.stdout.write(" " * leading)
+            lineCount = leading
+        elif lineCount > leading:
+            sys.stdout.write(" ")
+            lineCount = lineCount + 1
+
+        sys.stdout.write(word)
+        lineCount = lineCount + len(word)
+    sys.stdout.write("\n")
+
+
+def reflow(lines):
+    paragraph = ""
+    for i, rawLine in enumerate(lines):
+        line = rawLine.strip()
+
+        if len(line) == 0 or isListEntry(rawLine):
+            split(paragraph)
+            paragraph = ""
+
+            if len(line) == 0:
+                sys.stdout.write("\n")
+                continue
+            else:
+                split(rawLine.rstrip())
+                continue
+
+        if len(paragraph) != 0:
+            line = " " + line
+
+        paragraph = paragraph + line
+
+
+    split(paragraph)
+
+
+def main():
+    line = sys.stdin.readline()
+    line = line.strip()
+    if len(line) > LINE_LENGTH:
+        print("Error: first line must be length " + str(LINE_LENGTH) + " or less.")
+        exit(1)
+    sys.stdout.write(line)
+    sys.stdout.write("\n")
+
+    line = sys.stdin.readline()
+    line = line.strip()
+    if len(line) > 0:
+        print("Error: second line must be blank.")
+        exit(2)
+    sys.stdout.write(line)
+    sys.stdout.write("\n")
+
+    reflow(sys.stdin)
+
+
+if __name__ == "__main__":
+    main()
