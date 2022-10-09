@@ -17,6 +17,8 @@ For instance:
 The following files can be added to the package
 
     zshrc # Sourced in .zshrc
+    prezshrc # Sourced in .zshrc before all of the other zshrcs. Helpful, to preload some state that
+             # might impact the default package.
     zshenv # Sourced in .zshenv
     gitconfig # Included in .gitconfig
     hgrc # Included in .hgrc
