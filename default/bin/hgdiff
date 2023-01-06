@@ -107,6 +107,9 @@ def diffCommand(args, diffRecord):
 
 def main():
     args = getArgs(sys.argv)
+    if args is None:
+        return
+
     # TODO: Catch https://docs.python.org/3/library/subprocess.html#subprocess.CalledProcessError
     statusProcess = subprocess.run(statusCommand(args), shell = True, capture_output = True,
                                    check = True, text = True)
