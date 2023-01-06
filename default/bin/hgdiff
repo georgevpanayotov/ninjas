@@ -1,7 +1,10 @@
 #!/usr/bin/python3
 
+import os
 import subprocess
 import sys
+import tempfile
+
 
 # Input: <REV1> [<REV2> [<PATH>]]
 # Input: <REV1> [-- <PATH>]
@@ -75,11 +78,17 @@ def grabLine(lines, i):
     return line
 
 
-def hgCatCommand(rev, filename):
-    return f"hg cat -r {rev} {filename}"
+def hgCatCommand(rev, dirname, filename):
+    revName = subprocess.run(f"hg id -i -r {rev}", executable = "/bin/zsh", shell = True,
+                   text = True, capture_output = True, check = True)
+    revDir = f"{dirname}/{revName.stdout.strip()}"
+    os.mkdir(revDir)
+
+    tmpFile = f"{revDir}/{filename}"
+    return f"(hg cat -r {rev} {filename} > {tmpFile}); echo {tmpFile}"
 
 
-def diffCommand(args, diffRecord):
+def diffCommand(args, dirname, diffRecord):
     # If no revs are specified, we assume that the left rev is the currently checked out rev.
     leftRev = "."
     if len(args.revs) > 0:
@@ -88,15 +97,15 @@ def diffCommand(args, diffRecord):
     # If no second rev is specified, assume that the right rev is the current file state.
     rightFile = diffRecord.currFile
     if len(args.revs) > 1:
-        rightFile = f"<({hgCatCommand(args.revs[1], diffRecord.currFile)})"
+        rightFile = f"$({hgCatCommand(args.revs[1], dirname, diffRecord.currFile)})"
 
     command = None
     if diffRecord.action == "M":
-        command = f"vimdiff <({hgCatCommand(leftRev, diffRecord.currFile)}) {rightFile}"
+        command = f"vimdiff $({hgCatCommand(leftRev, dirname, diffRecord.currFile)}) {rightFile}"
     elif diffRecord.action == "A" and diffRecord.prevFile is None:
         command = f"vim {rightFile}"
     elif diffRecord.action == "A" and diffRecord.prevFile is not None:
-        command = f"vimdiff <({hgCatCommand(leftRev, diffRecord.prevFile)}) {rightFile}"
+        command = f"vimdiff $({hgCatCommand(leftRev, dirname, diffRecord.prevFile)}) {rightFile}"
 
     # Allows vim to access to tty so it can render properly.
     if command is not None:
@@ -140,11 +149,12 @@ def main():
 
         i = i + 1
 
-    for record in records:
-        command = diffCommand(args, record)
-        print(command)
-        # TODO: Catch https://docs.python.org/3/library/subprocess.html#subprocess.CalledProcessError
-        subprocess.run(command, executable = "/bin/zsh", shell = True, check = True)
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        for record in records:
+            command = diffCommand(args, tmpdirname, record)
+            print(command)
+            # TODO: Catch https://docs.python.org/3/library/subprocess.html#subprocess.CalledProcessError
+            subprocess.run(command, executable = "/bin/zsh", shell = True, check = True)
 
 
 if __name__ == "__main__":
