@@ -114,6 +114,29 @@ def diffCommand(args, dirname, diffRecord):
     return command
 
 
+# Print a user readable version of the command.
+def strCommand(args, dirname, diffRecord):
+    # If no revs are specified, we assume that the left rev is the currently checked out rev.
+    leftRev = "."
+    if len(args.revs) > 0:
+        leftRev = args.revs[0]
+
+    # If no second rev is specified, assume that the right rev is the current file state.
+    rightFile = diffRecord.currFile
+    if len(args.revs) > 1:
+        rightFile = f"{diffRecord.currFile} at {args.revs[1]}"
+
+    command = None
+    if diffRecord.action == "M":
+        command = f"comparing {diffRecord.currFile} at {leftRev} with {rightFile}"
+    elif diffRecord.action == "A" and diffRecord.prevFile is None:
+        command = f"added {rightFile}"
+    elif diffRecord.action == "A" and diffRecord.prevFile is not None:
+        command = f"comparing {diffRecord.prevFile} at {leftRev} with {rightFile}"
+
+    return command
+
+
 def main():
     args = getArgs(sys.argv)
     if args is None:
@@ -151,7 +174,8 @@ def main():
     with tempfile.TemporaryDirectory() as tmpdirname:
         for record in records:
             command = diffCommand(args, tmpdirname, record)
-            print(command)
+            printCommand = strCommand(args, tmpdirname, record)
+            print(printCommand)
             try:
                 subprocess.run(command, executable = "/bin/zsh", shell = True, check = True)
             except subprocess.CalledProcessError:
