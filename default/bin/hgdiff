@@ -82,7 +82,7 @@ def hgCatCommand(rev, dirname, filename):
     revName = subprocess.run(f"hg id -i -r {rev}", executable = "/bin/zsh", shell = True,
                    text = True, capture_output = True, check = True)
     revDir = f"{dirname}/{revName.stdout.strip()}"
-    os.mkdir(revDir)
+    os.makedirs(f"{revDir}/{os.path.dirname(filename)}")
 
     tmpFile = f"{revDir}/{filename}"
     return f"(hg cat -r {rev} {filename} > {tmpFile}); echo {tmpFile}"
