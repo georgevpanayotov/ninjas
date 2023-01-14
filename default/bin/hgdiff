@@ -137,11 +137,7 @@ def strCommand(args, dirname, diffRecord):
     return command
 
 
-def main():
-    args = getArgs(sys.argv)
-    if args is None:
-        return
-
+def getRecords(args):
     statusProcess = subprocess.run(statusCommand(args), shell = True, capture_output = True,
                                    check = True, text = True)
 
@@ -170,6 +166,16 @@ def main():
                 records.append(DiffRecord("A", line[2:], nextLine[2:]))
 
         i = i + 1
+
+    return records
+
+
+def main():
+    args = getArgs(sys.argv)
+    if args is None:
+        return
+
+    records = getRecords(args)
 
     with tempfile.TemporaryDirectory() as tmpdirname:
         for record in records:
