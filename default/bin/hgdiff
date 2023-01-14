@@ -222,6 +222,9 @@ class DiffManager:
 
 
     async def createCommands(self):
+        # Print instead of log. This is useful to indicate to the user that something is happening
+        # if it takes a while to snapshot.
+        print(f"Making snapshot in {self.tmpdirname}")
         records = self._getRecords()
 
         for record in records:
