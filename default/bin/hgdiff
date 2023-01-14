@@ -78,6 +78,7 @@ class DiffManager:
         self.tmpdirname = tmpdirname
         self._normalizedArgs = None
         self.queue = asyncio.Queue()
+        self.terminate = False
 
 
     def _getNormalizedArgs(self):
@@ -209,9 +210,13 @@ class DiffManager:
         records = self._getRecords()
 
         for record in records:
+            if self.terminate:
+                return
+
             command = await self._diffCommand(record)
             printCommand = self._strCommand(record)
             await self.queue.put((command, printCommand))
+
 
         # Tell the consumer that we're done so it should stop trying to access the queue.
         await self.queue.put((None, None))
@@ -234,6 +239,7 @@ class DiffManager:
                 # diffing and exit gracefully.
                 print("Editor returned non-zero code. Ending diff.")
                 self.queue.task_done()
+                self.terminate = True
                 return
 
 
