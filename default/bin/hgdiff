@@ -5,7 +5,7 @@ import os
 import subprocess
 import sys
 import tempfile
-
+import logging
 
 HGDIFF_LOG = "HGDIFF_LOG"
 
@@ -84,6 +84,12 @@ class DiffManager:
         self.terminate = False
 
         os.environ[HGDIFF_LOG] = self._logFile()
+
+        handler = logging.FileHandler(self._logFile())
+        handler.setLevel(logging.INFO)
+        handler.setFormatter(logging.Formatter('%(asctime)s %(message)s'))
+        logging.getLogger().addHandler(handler)
+
 
 
     def _getNormalizedArgs(self):
@@ -218,24 +224,20 @@ class DiffManager:
     async def createCommands(self):
         records = self._getRecords()
 
-        with open(self._logFile(), "w") as logFile:
-            for record in records:
-                if self.terminate:
-                    logFile.write("Terminating early.\n")
-                    logFile.flush()
-                    return
+        for record in records:
+            if self.terminate:
+                logging.warning("Terminating early.")
+                return
 
-                command = await self._diffCommand(record)
-                printCommand = self._strCommand(record)
-                logFile.write(f"{printCommand}\n")
-                logFile.flush()
-                await self.queue.put((command, printCommand))
+            command = await self._diffCommand(record)
+            printCommand = self._strCommand(record)
+            logging.warning(printCommand)
+            await self.queue.put((command, printCommand))
 
 
-            # Tell the consumer that we're done so it should stop trying to access the queue.
-            await self.queue.put((None, None))
-            logFile.write("DONE\n")
-            logFile.flush()
+        # Tell the consumer that we're done so it should stop trying to access the queue.
+        await self.queue.put((None, None))
+        logging.warning("DONE")
 
 
     async def executeCommands(self):
