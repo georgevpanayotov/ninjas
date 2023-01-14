@@ -10,7 +10,7 @@ import logging
 HGDIFF_LOG = "HGDIFF_LOG"
 
 
-# Input: <REV1> [<REV2> [<PATH>]]
+# Input: <REV1> [<REV2> -- [<PATH>]]
 # Input: <REV1> [-- <PATH>]
 # Input: [-- <PATH>]
 
