@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import asyncio
 import os
 import subprocess
 import sys
@@ -184,7 +185,40 @@ def getRecords(args):
     return records
 
 
-def main():
+async def createCommands(records, args, normalizedArgs, tmpdirname, queue):
+    for record in records:
+        # The actual command should use normalized args so that we can try to mkdir with
+        # something more reasonable.
+        command = diffCommand(normalizedArgs, tmpdirname, record)
+        # Use the orignal args as written by the user to specify revs when printing out what we
+        # will do.
+        printCommand = strCommand(args, tmpdirname, record)
+        await queue.put((command, printCommand))
+
+    # Tell the consumer that we're done so it should stop trying to access the queue.
+    await queue.put((None, None))
+
+
+async def executeCommands(queue):
+    while True:
+        (command, printCommand) = await queue.get()
+        if command is None or printCommand is None:
+            # Detect that we're done.
+            queue.task_done()
+            return
+
+        print(printCommand)
+        try:
+            subprocess.run(command, executable = "/bin/zsh", shell = True, check = True)
+        except subprocess.CalledProcessError:
+            # Non-zero exit is a valid way to stop vim. Using it to signify that we're done
+            # diffing and exit gracefully.
+            print("Editor returned non-zero code. Ending diff.")
+            queue.task_done()
+            return
+
+
+async def main():
     args = getArgs(sys.argv)
     if args is None:
         return
@@ -194,22 +228,19 @@ def main():
     records = getRecords(args)
 
     with tempfile.TemporaryDirectory() as tmpdirname:
-        for record in records:
-            # The actual command should use normalized args so that we can try to mkdir with
-            # something more reasonable.
-            command = diffCommand(normalizedArgs, tmpdirname, record)
-            # Use the orignal args as written by the user to specify revs when printing out what we
-            # will do.
-            printCommand = strCommand(args, tmpdirname, record)
-            print(printCommand)
-            try:
-                subprocess.run(command, executable = "/bin/zsh", shell = True, check = True)
-            except subprocess.CalledProcessError:
-                # Non-zero exit is a valid way to stop vim. Using it to signify that we're done
-                # diffing and exit gracefully.
-                print("Editor returned non-zero code. Ending diff.")
-                return
 
+        queue = asyncio.Queue()
+
+        producer = asyncio.create_task(createCommands(records, args, normalizedArgs, tmpdirname,
+                                                      queue))
+        consumer = asyncio.create_task(executeCommands(queue))
+
+        # First let the producer complete to make sure we generate commands for all of the records.
+        await asyncio.gather(producer)
+        # Now make sure the consumer has an opportunity to execute all of the commands.
+        await asyncio.gather(consumer)
+
+        consumer.cancel()
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
