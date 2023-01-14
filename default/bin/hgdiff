@@ -56,19 +56,6 @@ class DiffRecord:
         return f"{self.action} {self.currFile} {self.prevFile}"
 
 
-def statusCommand(args):
-    pathPart = ""
-    if args.path is not None:
-        pathPart = f" {args.path}"
-
-    if len(args.revs) == 0:
-        return f"hg st -C{pathPart}"
-    elif len(args.revs) == 1:
-        return f"hg st -C --rev {args.revs[0]}{pathPart}"
-    else:
-        return f"hg st -C --rev {args.revs[0]}:{args.revs[1]}{pathPart}"
-
-
 def grabLine(lines, i):
     if i >= len(lines):
         return None
@@ -78,145 +65,176 @@ def grabLine(lines, i):
 
     return line
 
-
-def normalizeArgs(args):
-    return Args([normalizeRev(rev) for rev in args.revs], args.path)
-
-
 def normalizeRev(rev):
     revName = subprocess.run(f"hg id -i -r {rev}", executable = "/bin/zsh", shell = True,
                    text = True, capture_output = True, check = True)
     return revName.stdout.strip()
 
 
-# Does `hg cat` to save the content of a file at a particular rev. Returns the temp file where that
-# will be saved.
-async def doHgCat(rev, dirname, filename):
-    revDir = f"{dirname}/{rev}"
-    os.makedirs(f"{revDir}/{os.path.dirname(filename)}", exist_ok = True)
 
-    tmpFile = f"{revDir}/{filename}"
-    proc = await asyncio.create_subprocess_shell(f"hg cat -r {rev} {filename} > {tmpFile}", executable = "/bin/zsh", shell = True)
-    await proc.wait()
-    return tmpFile
+class DiffManager:
+    def __init__(self, args, tmpdirname):
+        self.args = args
+        self.tmpdirname = tmpdirname
+        self._normalizedArgs = None
+        self.queue = asyncio.Queue()
 
 
-async def diffCommand(args, dirname, diffRecord):
-    # If no revs are specified, we assume that the left rev is the currently checked out rev.
-    leftRev = "."
-    if len(args.revs) > 0:
-        leftRev = args.revs[0]
-
-    # If no second rev is specified, assume that the right rev is the current file state.
-    rightFile = diffRecord.currFile
-    if len(args.revs) > 1:
-        rightFile = await doHgCat(args.revs[1], dirname, diffRecord.currFile)
-
-    command = None
-    if diffRecord.action == "M":
-        leftFile = await doHgCat(leftRev, dirname, diffRecord.currFile)
-        command = f"vimdiff {leftFile} {rightFile}"
-    elif diffRecord.action == "A" and diffRecord.prevFile is None:
-        command = f"vim {rightFile}"
-    elif diffRecord.action == "A" and diffRecord.prevFile is not None:
-        leftFile = await doHgCat(leftRev, dirname, diffRecord.prevFile)
-        command = f"vimdiff {leftFile} {rightFile}"
-
-    # Allows vim to access to tty so it can render properly.
-    if command is not None:
-        command = f"{command} < /dev/tty > /dev/tty"
-
-    return command
+    def _getNormalizedArgs(self):
+        if self._normalizedArgs is None:
+            self._normalizedArgs = self._normalizeArgs()
+        return self._normalizedArgs
 
 
-# Print a user readable version of the command.
-def strCommand(args, dirname, diffRecord):
-    # If no revs are specified, we assume that the left rev is the currently checked out rev.
-    leftRev = "."
-    if len(args.revs) > 0:
-        leftRev = args.revs[0]
+    def _statusCommand(self):
+        pathPart = ""
+        if self.args.path is not None:
+            pathPart = f" {self.args.path}"
 
-    # If no second rev is specified, assume that the right rev is the current file state.
-    rightFile = diffRecord.currFile
-    if len(args.revs) > 1:
-        rightFile = f"{diffRecord.currFile} at {args.revs[1]}"
-
-    command = None
-    if diffRecord.action == "M":
-        command = f"comparing {diffRecord.currFile} at {leftRev} with {rightFile}"
-    elif diffRecord.action == "A" and diffRecord.prevFile is None:
-        command = f"added {rightFile}"
-    elif diffRecord.action == "A" and diffRecord.prevFile is not None:
-        command = f"comparing {diffRecord.prevFile} at {leftRev} with {rightFile}"
-
-    return command
+        if len(self.args.revs) == 0:
+            return f"hg st -C{pathPart}"
+        elif len(self.args.revs) == 1:
+            return f"hg st -C --rev {self.args.revs[0]}{pathPart}"
+        else:
+            return f"hg st -C --rev {self.args.revs[0]}:{self.args.revs[1]}{pathPart}"
 
 
-def getRecords(args):
-    statusProcess = subprocess.run(statusCommand(args), shell = True, capture_output = True,
-                                   check = True, text = True)
+    def _normalizeArgs(self):
+        return Args([normalizeRev(rev) for rev in self.args.revs], self.args.path)
 
-    lines = statusProcess.stdout.split('\n')
-    records = []
 
-    i = 0
-    while i < len(lines):
-        line = grabLine(lines, i)
-        if line is None:
-            i = i + 1
-            continue
 
-        if line[0] == "M":
-            records.append(DiffRecord("M", line[2:], None))
-        elif line[0] == "A":
-            nextLine = grabLine(lines, i + 1)
+    # Does `hg cat` to save the content of a file at a particular rev. Returns the temp file where that
+    # will be saved.
+    async def _doHgCat(self, rev, filename):
+        revDir = f"{self.tmpdirname}/{rev}"
+        os.makedirs(f"{revDir}/{os.path.dirname(filename)}", exist_ok = True)
 
-            if nextLine is not None and nextLine[0] != " ":
-                nextLine = None
+        tmpFile = f"{revDir}/{filename}"
+        proc = await asyncio.create_subprocess_shell(f"hg cat -r {rev} {filename} > {tmpFile}",
+                                                     executable = "/bin/zsh", shell = True)
+        await proc.wait()
+        return tmpFile
 
-            if nextLine is None:
-                records.append(DiffRecord("A", line[2:], None))
-            else:
+
+    async def _diffCommand(self, diffRecord):
+        # The actual command should use normalized args so that we can try to mkdir with something
+        # more reasonable.
+        args = self._getNormalizedArgs()
+
+        # If no revs are specified, we assume that the left rev is the currently checked out rev.
+        leftRev = "."
+        if len(args.revs) > 0:
+            leftRev = args.revs[0]
+
+        # If no second rev is specified, assume that the right rev is the current file state.
+        rightFile = diffRecord.currFile
+        if len(args.revs) > 1:
+            rightFile = await self._doHgCat(args.revs[1], diffRecord.currFile)
+
+        command = None
+        if diffRecord.action == "M":
+            leftFile = await self._doHgCat(leftRev, diffRecord.currFile)
+            command = f"vimdiff {leftFile} {rightFile}"
+        elif diffRecord.action == "A" and diffRecord.prevFile is None:
+            command = f"vim {rightFile}"
+        elif diffRecord.action == "A" and diffRecord.prevFile is not None:
+            leftFile = await self._doHgCat(leftRev, diffRecord.prevFile)
+            command = f"vimdiff {leftFile} {rightFile}"
+
+        # Allows vim to access to tty so it can render properly.
+        if command is not None:
+            command = f"{command} < /dev/tty > /dev/tty"
+
+        return command
+
+
+    # Print a user readable version of the command.
+    def _strCommand(self, diffRecord):
+        # If no revs are specified, we assume that the left rev is the currently checked out rev.
+        leftRev = "."
+        if len(self.args.revs) > 0:
+            leftRev = self.args.revs[0]
+
+        # If no second rev is specified, assume that the right rev is the current file state.
+        rightFile = diffRecord.currFile
+        if len(self.args.revs) > 1:
+            rightFile = f"{diffRecord.currFile} at {self.args.revs[1]}"
+
+        command = None
+        if diffRecord.action == "M":
+            command = f"comparing {diffRecord.currFile} at {leftRev} with {rightFile}"
+        elif diffRecord.action == "A" and diffRecord.prevFile is None:
+            command = f"added {rightFile}"
+        elif diffRecord.action == "A" and diffRecord.prevFile is not None:
+            command = f"comparing {diffRecord.prevFile} at {leftRev} with {rightFile}"
+
+        return command
+
+
+    def _getRecords(self):
+        statusProcess = subprocess.run(self._statusCommand(), shell = True, capture_output = True,
+                                       check = True, text = True)
+
+        lines = statusProcess.stdout.split('\n')
+        records = []
+
+        i = 0
+        while i < len(lines):
+            line = grabLine(lines, i)
+            if line is None:
                 i = i + 1
-                records.append(DiffRecord("A", line[2:], nextLine[2:]))
+                continue
 
-        i = i + 1
+            if line[0] == "M":
+                records.append(DiffRecord("M", line[2:], None))
+            elif line[0] == "A":
+                nextLine = grabLine(lines, i + 1)
 
-    return records
+                if nextLine is not None and nextLine[0] != " ":
+                    nextLine = None
+
+                if nextLine is None:
+                    records.append(DiffRecord("A", line[2:], None))
+                else:
+                    i = i + 1
+                    records.append(DiffRecord("A", line[2:], nextLine[2:]))
+
+            i = i + 1
+
+        return records
 
 
-async def createCommands(records, args, normalizedArgs, tmpdirname, queue):
-    for record in records:
-        # The actual command should use normalized args so that we can try to mkdir with
-        # something more reasonable.
-        command = await diffCommand(normalizedArgs, tmpdirname, record)
-        # Use the orignal args as written by the user to specify revs when printing out what we
-        # will do.
-        printCommand = strCommand(args, tmpdirname, record)
-        await queue.put((command, printCommand))
+    async def createCommands(self):
+        records = self._getRecords()
 
-    # Tell the consumer that we're done so it should stop trying to access the queue.
-    await queue.put((None, None))
+        for record in records:
+            command = await self._diffCommand(record)
+            printCommand = self._strCommand(record)
+            await self.queue.put((command, printCommand))
+
+        # Tell the consumer that we're done so it should stop trying to access the queue.
+        await self.queue.put((None, None))
 
 
-async def executeCommands(queue):
-    while True:
-        (command, printCommand) = await queue.get()
-        if command is None or printCommand is None:
-            # Detect that we're done.
-            queue.task_done()
-            return
+    async def executeCommands(self):
+        while True:
+            (command, printCommand) = await self.queue.get()
+            if command is None or printCommand is None:
+                # Detect that we're done.
+                self.queue.task_done()
+                return
 
-        print(printCommand)
-        proc = await asyncio.create_subprocess_shell(command, executable = "/bin/zsh", shell = True)
-        exitCode = await proc.wait()
+            print(printCommand)
+            proc = await asyncio.create_subprocess_shell(command, executable = "/bin/zsh", shell = True)
+            exitCode = await proc.wait()
 
-        if exitCode != 0:
-            # Non-zero exit is a valid way to stop vim. Using it to signify that we're done
-            # diffing and exit gracefully.
-            print("Editor returned non-zero code. Ending diff.")
-            queue.task_done()
-            return
+            if exitCode != 0:
+                # Non-zero exit is a valid way to stop vim. Using it to signify that we're done
+                # diffing and exit gracefully.
+                print("Editor returned non-zero code. Ending diff.")
+                self.queue.task_done()
+                return
 
 
 async def main():
@@ -224,17 +242,11 @@ async def main():
     if args is None:
         return
 
-    normalizedArgs = normalizeArgs(args)
-
-    records = getRecords(args)
-
     with tempfile.TemporaryDirectory() as tmpdirname:
+        diffManager = DiffManager(args, tmpdirname)
 
-        queue = asyncio.Queue()
-
-        producer = asyncio.create_task(createCommands(records, args, normalizedArgs, tmpdirname,
-                                                      queue))
-        consumer = asyncio.create_task(executeCommands(queue))
+        consumer = asyncio.create_task(diffManager.executeCommands())
+        producer = asyncio.create_task(diffManager.createCommands())
 
         # First let the producer complete to make sure we generate commands for all of the records.
         await asyncio.gather(producer)
