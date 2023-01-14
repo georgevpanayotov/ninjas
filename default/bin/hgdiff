@@ -78,10 +78,18 @@ def grabLine(lines, i):
     return line
 
 
-def hgCatCommand(rev, dirname, filename):
+def normalizeArgs(args):
+    return Args([normalizeRev(rev) for rev in args.revs], args.path)
+
+
+def normalizeRev(rev):
     revName = subprocess.run(f"hg id -i -r {rev}", executable = "/bin/zsh", shell = True,
                    text = True, capture_output = True, check = True)
-    revDir = f"{dirname}/{revName.stdout.strip()}"
+    return revName.stdout.strip()
+
+
+def hgCatCommand(rev, dirname, filename):
+    revDir = f"{dirname}/{rev}"
     os.makedirs(f"{revDir}/{os.path.dirname(filename)}", exist_ok = True)
 
     tmpFile = f"{revDir}/{filename}"
@@ -175,11 +183,13 @@ def main():
     if args is None:
         return
 
+    normalizedArgs = normalizeArgs(args)
+
     records = getRecords(args)
 
     with tempfile.TemporaryDirectory() as tmpdirname:
         for record in records:
-            command = diffCommand(args, tmpdirname, record)
+            command = diffCommand(normalizedArgs, tmpdirname, record)
             printCommand = strCommand(args, tmpdirname, record)
             print(printCommand)
             try:
