@@ -88,12 +88,16 @@ def normalizeRev(rev):
     return revName.stdout.strip()
 
 
-def hgCatCommand(rev, dirname, filename):
+# Does `hg cat` to save the content of a file at a particular rev. Returns the temp file where that
+# will be saved.
+def doHgCat(rev, dirname, filename):
     revDir = f"{dirname}/{rev}"
     os.makedirs(f"{revDir}/{os.path.dirname(filename)}", exist_ok = True)
 
     tmpFile = f"{revDir}/{filename}"
-    return f"(hg cat -r {rev} {filename} > {tmpFile}); echo {tmpFile}"
+    subprocess.run(f"hg cat -r {rev} {filename} > {tmpFile}", executable = "/bin/zsh", shell = True,
+                   check = True)
+    return tmpFile
 
 
 def diffCommand(args, dirname, diffRecord):
@@ -105,15 +109,17 @@ def diffCommand(args, dirname, diffRecord):
     # If no second rev is specified, assume that the right rev is the current file state.
     rightFile = diffRecord.currFile
     if len(args.revs) > 1:
-        rightFile = f"$({hgCatCommand(args.revs[1], dirname, diffRecord.currFile)})"
+        rightFile = doHgCat(args.revs[1], dirname, diffRecord.currFile)
 
     command = None
     if diffRecord.action == "M":
-        command = f"vimdiff $({hgCatCommand(leftRev, dirname, diffRecord.currFile)}) {rightFile}"
+        leftFile = doHgCat(leftRev, dirname, diffRecord.currFile)
+        command = f"vimdiff {leftFile} {rightFile}"
     elif diffRecord.action == "A" and diffRecord.prevFile is None:
         command = f"vim {rightFile}"
     elif diffRecord.action == "A" and diffRecord.prevFile is not None:
-        command = f"vimdiff $({hgCatCommand(leftRev, dirname, diffRecord.prevFile)}) {rightFile}"
+        leftFile = doHgCat(leftRev, dirname, diffRecord.prevFile)
+        command = f"vimdiff {leftFile} {rightFile}"
 
     # Allows vim to access to tty so it can render properly.
     if command is not None:
@@ -189,7 +195,11 @@ def main():
 
     with tempfile.TemporaryDirectory() as tmpdirname:
         for record in records:
+            # The actual command should use normalized args so that we can try to mkdir with
+            # something more reasonable.
             command = diffCommand(normalizedArgs, tmpdirname, record)
+            # Use the orignal args as written by the user to specify revs when printing out what we
+            # will do.
             printCommand = strCommand(args, tmpdirname, record)
             print(printCommand)
             try:
