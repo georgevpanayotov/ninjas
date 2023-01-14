@@ -7,6 +7,9 @@ import sys
 import tempfile
 
 
+HGDIFF_LOG = "HGDIFF_LOG"
+
+
 # Input: <REV1> [<REV2> [<PATH>]]
 # Input: <REV1> [-- <PATH>]
 # Input: [-- <PATH>]
@@ -79,6 +82,8 @@ class DiffManager:
         self._normalizedArgs = None
         self.queue = asyncio.Queue()
         self.terminate = False
+
+        os.environ[HGDIFF_LOG] = self._logFile()
 
 
     def _getNormalizedArgs(self):
@@ -206,20 +211,31 @@ class DiffManager:
         return records
 
 
+    def _logFile(self):
+        return f"{self.tmpdirname}/log"
+
+
     async def createCommands(self):
         records = self._getRecords()
 
-        for record in records:
-            if self.terminate:
-                return
+        with open(self._logFile(), "w") as logFile:
+            for record in records:
+                if self.terminate:
+                    logFile.write("Terminating early.\n")
+                    logFile.flush()
+                    return
 
-            command = await self._diffCommand(record)
-            printCommand = self._strCommand(record)
-            await self.queue.put((command, printCommand))
+                command = await self._diffCommand(record)
+                printCommand = self._strCommand(record)
+                logFile.write(f"{printCommand}\n")
+                logFile.flush()
+                await self.queue.put((command, printCommand))
 
 
-        # Tell the consumer that we're done so it should stop trying to access the queue.
-        await self.queue.put((None, None))
+            # Tell the consumer that we're done so it should stop trying to access the queue.
+            await self.queue.put((None, None))
+            logFile.write("DONE\n")
+            logFile.flush()
 
 
     async def executeCommands(self):
