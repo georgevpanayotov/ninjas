@@ -1,11 +1,13 @@
 #!/usr/bin/python3
 
 import asyncio
+import logging
 import os
 import subprocess
 import sys
 import tempfile
-import logging
+
+from disabledkeyboardinterrupt import DisabledKeyboardInterrupt
 
 HGDIFF_LOG = "HGDIFF_LOG"
 
@@ -252,8 +254,9 @@ class DiffManager:
                 return
 
             print(printCommand)
-            proc = await asyncio.create_subprocess_shell(command, executable = "/bin/zsh", shell = True)
-            exitCode = await proc.wait()
+            with DisabledKeyboardInterrupt() as dki:
+                proc = await asyncio.create_subprocess_shell(command, executable = "/bin/zsh", shell = True)
+                exitCode = await proc.wait()
 
             if exitCode != 0:
                 # Non-zero exit is a valid way to stop vim. Using it to signify that we're done
