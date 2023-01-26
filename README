@@ -22,6 +22,7 @@ The following files can be added to the package
     zshenv # Sourced in .zshenv
     gitconfig # Included in .gitconfig
     hgrc # Included in .hgrc
+    screenrc # Include in .screenrc
     vimpaths # Each line is added to vim's runtimepath
 
 The following folders can be added to the package

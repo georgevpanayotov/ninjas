@@ -10,6 +10,7 @@ source $NINJAS_PATH/helpers.zsh
 () {
     rm -rf ~/.ninjas/.hgrc
     rm -rf ~/.ninjas/.gitconfig
+    rm -rf ~/.ninjas/.screenrc
 
     local packages=($(listPackages))
     local package=""
@@ -41,6 +42,12 @@ source $NINJAS_PATH/helpers.zsh
         if [[ -e "$gitConfig" ]]; then
             createGitConfigIfNeeded
             echo "path = $gitConfig" >> ~/.ninjas/.gitconfig
+        fi
+
+        local screenRc="$package/screenrc"
+        if [[ -e "$screenRc" ]]; then
+            createScreenrcIfNeeded
+            echo "source $screenRc" >> ~/.ninjas/.screenrc
         fi
     done
 }
