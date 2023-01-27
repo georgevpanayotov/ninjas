@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import re
 import sys
 
 LINE_LENGTH = 72
@@ -37,7 +38,9 @@ def isListEntry(rawLine):
     return rawLine[0].isspace() or rawLine[0] == '-' or rawLine[0] == '*'
 
 def isComment(rawLine):
-    return rawLine[0:3] == 'HG:' or rawLine[0:1] == '#'
+    return rawLine[0:3] == 'HG:' or \
+           rawLine[0:1] == '#' or \
+           re.match("^[A-Z_0-9]+=", rawLine) is not None
 
 def split(paragraph):
     if len(paragraph) == 0:
