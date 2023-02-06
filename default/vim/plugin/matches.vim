@@ -33,6 +33,7 @@ function SetMatches(width)
     " Highlight the width + 1 column (only for lines that reach that far) helps to keep us within
     " the column limits.
     let w:colorColumnMatch = matchadd('ColorColumn', '\%' . (w:width + 1) . 'v')
+    set list
 endfunction
 
 " Assumes that matches are set. Disables them and removes the variables.
@@ -42,6 +43,7 @@ function UnsetMatches()
     :call matchdelete(w:colorColumnMatch)
 
     let w:width = 0
+    set nolist
     unlet w:matches_created
     unlet w:tabMatch
     unlet w:trailingMatch
