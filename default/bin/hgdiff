@@ -118,8 +118,8 @@ class DiffManager:
 
 
 
-    # Does `hg cat` to save the content of a file at a particular rev. Returns the temp file where that
-    # will be saved.
+    # Does `hg cat` to save the content of a file at a particular rev. Returns the temp file where
+    # that will be saved.
     async def _doHgCat(self, rev, filename):
         revDir = f"{self.tmpdirname}/{rev}"
         os.makedirs(f"{revDir}/{os.path.dirname(filename)}", exist_ok = True)
@@ -187,8 +187,13 @@ class DiffManager:
 
 
     def _getRecords(self):
-        statusProcess = subprocess.run(self._statusCommand(), shell = True, capture_output = True,
-                                       check = True, text = True)
+        try:
+            statusProcess = subprocess.run(self._statusCommand(), shell = True,
+                                           capture_output = True, check = True, text = True)
+        except subprocess.CalledProcessError as e:
+            print(f"Command:\n    {self._statusCommand()}\nfailed with exit code: {e.returncode}")
+            print(e.stderr)
+            exit(1)
 
         lines = statusProcess.stdout.split('\n')
         records = []
@@ -255,7 +260,8 @@ class DiffManager:
 
             print(printCommand)
             with DisabledKeyboardInterrupt() as dki:
-                proc = await asyncio.create_subprocess_shell(command, executable = "/bin/zsh", shell = True)
+                proc = await asyncio.create_subprocess_shell(command, executable = "/bin/zsh",
+                                                             shell = True)
                 exitCode = await proc.wait()
 
             if exitCode != 0:
