@@ -12,17 +12,17 @@ from disabledkeyboardinterrupt import DisabledKeyboardInterrupt
 HGDIFF_LOG = "HGDIFF_LOG"
 
 
-# Input: <REV1> [<REV2> -- [<PATH>]]
-# Input: <REV1> [-- <PATH>]
-# Input: [-- <PATH>]
+# Input: <REV1> [<REV2> -- [<PATHS>...]]
+# Input: <REV1> [-- <PATHS>...]
+# Input: [-- <PATHS>...]
 
 class Args:
-    def __init__(self, revs, path):
+    def __init__(self, revs, paths):
         self.revs = revs
-        self.path = path
+        self.paths = paths
 
     def __str__(self):
-        return f"{self.revs} -- {self.path}"
+        return f"{self.revs} -- {self.paths}"
 
 
 def getArgs(argv):
@@ -36,19 +36,15 @@ def getArgs(argv):
     # Skip over the "--"
     i = i + 1
 
-    path = None
+    paths = None
     if i < len(argv):
-        path = argv[i]
-
-    if i < len(argv) - 1:
-        print(f"Unexpected paths[Max 1]: {argv[i + 1:]}")
-        return None
+        paths = argv[i:]
 
     if len(revs) > 2:
         print(f"Unexpected revs[Max 2]: {revs[2:]}.")
         return None
 
-    return Args(revs, path)
+    return Args(revs, paths)
 
 
 class DiffRecord:
@@ -102,8 +98,9 @@ class DiffManager:
 
     def _statusCommand(self):
         pathPart = ""
-        if self.args.path is not None:
-            pathPart = f" {self.args.path}"
+        if self.args.paths is not None:
+            joinedPaths = " ".join(self.args.paths)
+            pathPart = f" {joinedPaths}"
 
         if len(self.args.revs) == 0:
             return f"hg st -C{pathPart}"
