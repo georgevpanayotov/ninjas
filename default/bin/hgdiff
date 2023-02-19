@@ -111,7 +111,7 @@ class DiffManager:
 
 
     def _normalizeArgs(self):
-        return Args([normalizeRev(rev) for rev in self.args.revs], self.args.path)
+        return Args([normalizeRev(rev) for rev in self.args.revs], self.args.paths)
 
 
 
