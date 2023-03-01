@@ -18,7 +18,7 @@ listVimPaths() {
 relink() {
     if [[ ( -L $2 ) || ( ! ( -e $2 ) ) ]]; then
         echo "Linking $2 to point to $1"
-        ln -s -f $1 $2
+        ln -sfn $1 $2
     else
         echo "File $2 already present. Please remove it first"
         exit 1
