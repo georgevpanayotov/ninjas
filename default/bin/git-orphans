@@ -1,0 +1,69 @@
+#!/usr/bin/python3
+
+import subprocess
+import re
+import sys
+
+# Finds the minimum number of unreachable commits that can be used to find the rest of the
+# unreachable commits. i.e. all of the unreachable heads. This is useful to resurrect a lost commit
+# chain.
+
+def fetchUnreachableCommits():
+    unreachableProcess = subprocess.run("git fsck --unreachable --no-reflogs --root", shell = True,
+                                         text = True, capture_output = True)
+    commits = []
+    for line in unreachableProcess.stdout.strip().split("\n"):
+        commitMatch = re.match("^unreachable commit (.*)$", line)
+        if commitMatch is not None:
+            commits.append(commitMatch.group(1))
+
+    return commits
+
+
+# All commits reachable from this one.
+def fetchReachable(commit):
+    logProcess = subprocess.run(f"git log --format=\"%H\" {commit}", shell = True, text = True,
+                                capture_output = True)
+    return logProcess.stdout.strip().split("\n")
+
+
+# A set of all commits that represent a stash. Let's not consider those orphans. The latest stash
+# isn't considered unreachable because it is refs/stash but the others aren't explicitly accessible.
+# NOTE: Dropped stashes live on as orphans.
+def fetchStashSet():
+    logProcess = subprocess.run(f"git stash list --format=\"%H\"", shell = True, text = True,
+                                capture_output = True)
+    return set(logProcess.stdout.strip().split("\n"))
+
+
+# Do the algorithm. Load all unreachables into a set. Iterate over them, for each one, remove any
+# commits that can be reached from it (other than itself). The resulting set is the minimum set of
+# commits that can reach all other unreachables.
+def minimizeUnreachable():
+    unreachable = fetchUnreachableCommits()
+    # Ignore stashes here. Unreachable stashes might get dropped and then the real orphan that it
+    # was hiding could be lost.
+    remaining = set(fetchUnreachableCommits()) - fetchStashSet()
+
+    unreachable = list(remaining)
+
+    for commit in unreachable:
+        if commit not in remaining:
+            # This commit has already been reached by another one in the set.
+            continue
+
+        reachable = fetchReachable(commit)
+        for reachableCommit in reachable[1:]:
+            if reachableCommit not in remaining:
+                # We hit one that is already reachable, all subsequent ones are therefore reachable.
+                # Break and move on to the next unreachable one.
+                break
+
+            remaining.remove(reachableCommit)
+
+    return list(remaining)
+
+
+if __name__ == "__main__":
+    for commit in minimizeUnreachable():
+        print(commit)
