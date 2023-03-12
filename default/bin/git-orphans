@@ -8,6 +8,8 @@ import sys
 # unreachable commits. i.e. all of the unreachable heads. This is useful to resurrect a lost commit
 # chain.
 
+
+# Fetches all commits that aren't reachable from a ref. Uses git's builtin fsck tool.
 def fetchUnreachableCommits():
     unreachableProcess = subprocess.run("git fsck --unreachable --no-reflogs --root", shell = True,
                                          text = True, capture_output = True)
