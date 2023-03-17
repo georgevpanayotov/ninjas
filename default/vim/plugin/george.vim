@@ -63,6 +63,8 @@ command Malkovich :%s/\<[[:alnum:]_]*\>/Malkovich!/g
 au FileType objc,objcpp,cpp,proto setlocal equalprg=clang-format\ -style=file\ -assume-filename=%
 au FileType kotlin setlocal equalprg=ktlint\ --stdin\ -F
 au FileType cpp call UpdateMatches(80)
+au FileType cpp setlocal foldmethod=expr
+au FileType cpp setlocal foldexpr=CppImport(v:lnum)
 au FileType gitcommit,hgcommit call UpdateMatches(72)
 au FileType gitcommit,hgcommit setlocal equalprg=commit_fmt
 au FileType make setlocal noet
@@ -71,6 +73,14 @@ au FileType java setlocal foldexpr=JavaImport(v:lnum)
 
 function JavaImport(lnum)
   if getline(a:lnum)=~"^import" || (getline(a:lnum - 1)=~"^import" && getline(a:lnum + 1)=~"^import" && getline(a:lnum)=~"^s*$")
+    return 1
+  endif
+
+  return 0
+endfunction
+
+function CppImport(lnum)
+  if getline(a:lnum)=~"^#include" || (getline(a:lnum - 1)=~"^#include" && getline(a:lnum + 1)=~"^#include" && getline(a:lnum)=~"^s*$")
     return 1
   endif
 
