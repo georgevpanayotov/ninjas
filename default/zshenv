@@ -4,7 +4,6 @@ SAVEHIST=1000
 
 # Useful defines
 PATH=$PATH:~/bin:~/usr/bin
-TERM=xterm-256color
 
 export EDITOR=vim
 
