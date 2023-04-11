@@ -70,6 +70,20 @@ au FileType gitcommit,hgcommit setlocal equalprg=commit_fmt
 au FileType make setlocal noet
 au FileType java setlocal foldmethod=expr
 au FileType java setlocal foldexpr=JavaImport(v:lnum)
+au FileType netrw call UpdateNetrwBuffer()
+
+" Workaround to the netrw buffers being listed as '[No Name]'
+" See: https://github.com/neovim/neovim/issues/17841
+function UpdateNetrwBuffer()
+    " This issue happens only when 'hidden' is true. It seems that netrw will create a new buffer to
+    " load its browser. However, when opening a directory vim will create an empty buffer with that
+    " directory's name. If 'nohidden' then this buffer is deleted as soon as the netrw buffer is
+    " created, this allows netrw to rename its buffer to the directory's name. If 'hidden' then the
+    " pre-existing empty buffer hangs around and interferes with the attempt to rename the netrw
+    " buffer. This fix just deletes the empty buffer and renames the netrw buffer.
+    exec bufnr(b:netrw_curdir) . 'bd'
+    exec 'file ' . b:netrw_curdir
+endfunction
 
 function JavaImport(lnum)
   if getline(a:lnum)=~"^import" || (getline(a:lnum - 1)=~"^import" && getline(a:lnum + 1)=~"^import" && getline(a:lnum)=~"^s*$")
