@@ -75,14 +75,20 @@ au FileType netrw call UpdateNetrwBuffer()
 " Workaround to the netrw buffers being listed as '[No Name]'
 " See: https://github.com/neovim/neovim/issues/17841
 function UpdateNetrwBuffer()
-    " This issue happens only when 'hidden' is true. It seems that netrw will create a new buffer to
-    " load its browser. However, when opening a directory vim will create an empty buffer with that
-    " directory's name. If 'nohidden' then this buffer is deleted as soon as the netrw buffer is
-    " created, this allows netrw to rename its buffer to the directory's name. If 'hidden' then the
-    " pre-existing empty buffer hangs around and interferes with the attempt to rename the netrw
-    " buffer. This fix just deletes the empty buffer and renames the netrw buffer.
-    exec bufnr(b:netrw_curdir) . 'bd'
-    exec 'file ' . b:netrw_curdir
+    let l:curdir_bnr = bufnr(b:netrw_curdir)
+
+    " Only do this if the current bufnr isn't the same as the one listed for the dir name.
+    if l:curdir_bnr != bufnr('%')
+        " This issue happens only when 'hidden' is true. It seems that netrw will create a new
+        " buffer to load its browser. However, when opening a directory vim will create an empty
+        " buffer with that directory's name. If 'nohidden' then this buffer is deleted as soon as
+        " the netrw buffer is created, this allows netrw to rename its buffer to the directory's
+        " name. If 'hidden' then the pre-existing empty buffer hangs around and interferes with the
+        " attempt to rename the netrw buffer. This fix just deletes the empty buffer and renames the
+        " netrw buffer.
+        exec bufnr(l:curdir_bnr) . 'bd'
+        exec 'file ' . b:netrw_curdir
+    endif
 endfunction
 
 function JavaImport(lnum)
