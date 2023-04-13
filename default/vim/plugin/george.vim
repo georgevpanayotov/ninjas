@@ -82,7 +82,7 @@ function UpdateNetrwBuffer()
     endif
 
     let b:netrw_fixed = 1
-    let l:curdir_bnr = bufnr(b:netrw_curdir)
+    let l:curdir_bnr = bufnr('^' . b:netrw_curdir . '$')
 
     " Only do this if the current bufnr isn't the same as the one listed for the dir name.
     if l:curdir_bnr != bufnr('%')
