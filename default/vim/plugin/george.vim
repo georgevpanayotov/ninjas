@@ -75,13 +75,6 @@ au FileType netrw call UpdateNetrwBuffer()
 " Workaround to the netrw buffers being listed as '[No Name]'
 " See: https://github.com/neovim/neovim/issues/17841
 function UpdateNetrwBuffer()
-    if exists('b:netrw_fixed')
-        " Don't retry the fix. Even after the fix, the bufnr is not correctly
-        " updated.
-        return
-    endif
-
-    let b:netrw_fixed = 1
     let l:curdir_bnr = bufnr('^' . b:netrw_curdir . '$')
 
     " Only do this if the current bufnr isn't the same as the one listed for the dir name.
