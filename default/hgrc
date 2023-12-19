@@ -7,6 +7,7 @@ merge = vimdiff
 extdiff =
 strip =
 rebase =
+george = $NINJAS_PATH/default/hg_ext.py
 
 [merge-tools]
 vimdiff.executable = vim
