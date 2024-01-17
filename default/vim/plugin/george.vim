@@ -62,6 +62,8 @@ command Malkovich :%s/\<[[:alnum:]_]*\>/Malkovich!/g
 
 au FileType objc,objcpp,cpp,proto setlocal equalprg=clang-format\ -style=file\ -assume-filename=%
 au FileType kotlin setlocal equalprg=ktlint\ --stdin\ -F
+au FileType kotlin setlocal foldmethod=expr
+au FileType kotlin setlocal foldexpr=JavaImport(v:lnum)
 au FileType cpp call UpdateMatches(80)
 au FileType cpp setlocal foldmethod=expr
 au FileType cpp setlocal foldexpr=CppImport(v:lnum)
