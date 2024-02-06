@@ -17,19 +17,26 @@ HGDIFF_LOG = "HGDIFF_LOG"
 # Input: [-- <PATHS>...]
 
 class Args:
-    def __init__(self, revs, paths):
+    def __init__(self, revs, paths, flags):
         self.revs = revs
         self.paths = paths
+        self.flags = flags
 
     def __str__(self):
-        return f"{self.revs} -- {self.paths}"
+        return f"{self.revs} --flags {self.flags} -- {self.paths}"
 
 
 def getArgs(argv):
     i = 1
     revs = []
+    flags = []
     while i < len(argv) and argv[i] != "--":
-        revs.append(argv[i])
+        if argv[i] == "--flag" or argv[i] == "-f":
+            # Advance to the actual flag.
+            i = i + 1
+            flags.append(argv[i])
+        else:
+            revs.append(argv[i])
 
         i = i + 1
 
@@ -44,7 +51,7 @@ def getArgs(argv):
         print(f"Unexpected revs[Max 2]: {revs[2:]}.")
         return None
 
-    return Args(revs, paths)
+    return Args(revs, paths, flags)
 
 
 class DiffRecord:
@@ -65,12 +72,6 @@ def grabLine(lines, i):
         return None
 
     return line
-
-def normalizeRev(rev):
-    revName = subprocess.run(f"hg id -i -r {rev}", executable = "/bin/zsh", shell = True,
-                   text = True, capture_output = True, check = True)
-    return revName.stdout.strip()
-
 
 
 class DiffManager:
@@ -103,16 +104,25 @@ class DiffManager:
             pathPart = f" {joinedPaths}"
 
         if len(self.args.revs) == 0:
-            return f"hg st -C{pathPart}"
+            return f"hg {self._getFlags()} st -C{pathPart}"
         elif len(self.args.revs) == 1:
-            return f"hg st -C --rev {self.args.revs[0]}{pathPart}"
+            return f"hg {self._getFlags()} st -C --rev {self.args.revs[0]}{pathPart}"
         else:
-            return f"hg st -C --rev {self.args.revs[0]}:{self.args.revs[1]}{pathPart}"
+            return f"hg {self._getFlags()} st -C --rev {self.args.revs[0]}:{self.args.revs[1]}{pathPart}"
 
 
     def _normalizeArgs(self):
-        return Args([normalizeRev(rev) for rev in self.args.revs], self.args.paths)
+        return Args([self._normalizeRev(rev) for rev in self.args.revs], self.args.paths, self.args.flags)
 
+
+    def _normalizeRev(self, rev):
+        revName = subprocess.run(f"hg {self._getFlags()} id -i -r {rev}", executable = "/bin/zsh", shell = True,
+                       text = True, capture_output = True, check = True)
+        return revName.stdout.strip()
+
+
+    def _getFlags(self):
+        return "".join(self.args.flags)
 
 
     # Does `hg cat` to save the content of a file at a particular rev. Returns the temp file where
@@ -122,7 +132,7 @@ class DiffManager:
         os.makedirs(f"{revDir}/{os.path.dirname(filename)}", exist_ok = True)
 
         tmpFile = f"{revDir}/{filename}"
-        proc = await asyncio.create_subprocess_shell(f"hg cat -r {rev} {filename} > {tmpFile}",
+        proc = await asyncio.create_subprocess_shell(f"hg {self._getFlags()} cat -r {rev} {filename} > {tmpFile}",
                                                      executable = "/bin/zsh", shell = True)
         await proc.wait()
         return tmpFile
