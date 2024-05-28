@@ -8,6 +8,7 @@ if [[ -f ~/.ninjas ]]; then
 fi
 
 mkdir -p ~/.ninjas
+mkdir -p ~/.vim/swp
 
 pwd > ~/.ninjas/.path
 
