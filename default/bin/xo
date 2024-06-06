@@ -1,10 +1,24 @@
 #!/bin/zsh
 
+set -A XA
+
+# `-a` denotes an arg to pass to xargs rather than to the command being executed.
+while [[ "$1" == "-a" ]]; do
+    # Skip over the `-a`
+    shift
+
+    # Grab the arg
+    XA+=($1)
+
+    # Move to the next arg
+    shift
+done
+
+
 # grab the command we want
 X_CMD=$1
 
 # shift so we can grab the remaining args
 shift
 
-# TODO: make it possible to pass other args to xargs
-xargs sh -c "$X_CMD \"\$@\" < /dev/tty" $X_CMD $*
+xargs $XA sh -c "$X_CMD \"\$@\" < /dev/tty" $X_CMD $*
