@@ -13,7 +13,7 @@ if [[ "$1" != "" ]]; then
     saved_state=$(stty -g)
     tput smcup
 
-    ssh -t "$1" "$SCREEN_CMD -rx \${USER}_scr"
+    ssh -t "$1" "zsh -l -c \"$SCREEN_CMD -rx \${USER}_scr\""
     ssh_status=$?
 
     tput rmcup
