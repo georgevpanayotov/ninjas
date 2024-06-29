@@ -116,6 +116,8 @@ set directory=~/.vim/swp//
 
 map \t :FZF<ENTER>
 
+" Update errorformat to support Kotlin compiler errors.
+let &errorformat="e: file://%f:%l:%c %m,".&errorformat
 
 if has('python')
     execute 'pyfile ' . fnamemodify(resolve(expand('<sfile>:p')), ':h') . '/selectv.py'
