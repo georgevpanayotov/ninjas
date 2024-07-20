@@ -1,9 +1,11 @@
 #!/bin/zsh
 
-PATH_TO_SEARCH=.
+find_paths() {
+    if [[ "$1" != "" ]]; then
+        find "$1" -name \*.\* -type f
+    else
+        cat
+    fi
+}
 
-if [[ "$1" != "" ]]; then
-    PATH_TO_SEARCH="$1"
-fi
-
-find "$PATH_TO_SEARCH" -name \*.\* -type f | sed 's/^\(.*\)\.\([^.]*\)$/\2; \1.\2/' | sort
+find_paths "$1" | grep '\/[^/]*\.[^/]*$' | sed 's/^\(.*\)\.\([^./]*\)$/\2; \1.\2/' | sort
