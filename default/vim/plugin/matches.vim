@@ -74,7 +74,19 @@ au BufWinEnter * :call Matches_au()
 " Bootstrap us on the first window.
 call UpdateMatches(g:default_width)
 
+" Jumps to the match column. If no match is set, jumps to the end of the line.
+function JumpToEnd()
+    if exists('w:width') && w:width != 0
+        execute ':normal 0' . w:width . 'l'
+    else
+        normal $
+    endif
+endfunction
+
 " Quick shortcuts to change between 80 width, 100 width, or not limit.
 nnoremap <silent> \8 :call UpdateMatches(80) <CR>
 nnoremap <silent> \1 :call UpdateMatches(100) <CR>
 nnoremap <silent> \0 :call UpdateMatches(0) <CR>
+
+" Quick short cut to jump to the match column.
+nnoremap <silent> \$ :call JumpToEnd() <CR>
