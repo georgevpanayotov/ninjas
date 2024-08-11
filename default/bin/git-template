@@ -1,0 +1,30 @@
+#!/bin/zsh
+
+# Creates a new repo that is preloaded with a collapsed version of the template repo. The new repo
+# doesn't have any commits and doesn't retain any link to the template repo. Its index contains the
+# collapsed version of the template ready to commit so that the author can make adjustments from the
+# template as needed (e.g. changing placeholder names or app icons) before creating the initial
+# commit.
+
+if [[ "$2" == "" ]]; then
+    echo "Usage"
+    echo "  $ git template <TEMPLATE_REPO> <NEW_PROJECT_REPO>"
+
+    exit 1
+fi
+
+git clone "$1" "$2" || exit 2
+cd "$2"
+
+MAIN_BRANCH="$(git branch --show-current)"
+
+# Move the template repo's main branch out of the way.
+git branch -m "$MAIN_BRANCH" tmp
+
+# Set us up for the main branch to be a collapsed view of the template.
+git checkout --orphan "$MAIN_BRANCH" tmp
+
+# Ditch any link to the actual template repo.
+git remote remove origin
+git branch -D tmp
+git gc --prune=now
