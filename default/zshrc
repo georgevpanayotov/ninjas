@@ -56,6 +56,10 @@ svim() {
 }
 
 () {
+    if [[ "$SUPPRESS_SCREEN" != "" ]]; then
+        return
+    fi
+
     if [[ "$SCREEN_CMD" == "" ]]; then
         local SCREEN_CMD=screen
     fi
