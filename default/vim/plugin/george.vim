@@ -36,7 +36,11 @@ nnoremap <silent> \n :let @f=expand('%')<CR>
 function FormatGP()
     let l:winview = winsaveview()
     norm gg=G
-    call winrestview(l:winview)
+    if v:shell_error != 0
+        cf ~/wf_err
+    else
+        call winrestview(l:winview)
+    endif
 endfunction
 
 function GPFilter()
@@ -61,7 +65,7 @@ command Itch :vnew|setlocal buftype=nofile|setlocal bufhidden=hide|setlocal nosw
 command Malkovich :%s/\<[[:alnum:]_]*\>/Malkovich!/g
 
 au FileType objc,objcpp,cpp,proto setlocal equalprg=clang-format\ -style=file\ -assume-filename=%
-au FileType kotlin setlocal equalprg=ktlint\ --stdin\ -F
+au FileType kotlin setlocal equalprg=wrap_format.sh\ ktfmt\ --stdin-name=%\ --kotlinlang-style\ -
 au FileType kotlin setlocal foldmethod=expr
 au FileType kotlin setlocal foldexpr=JavaImport(v:lnum)
 au FileType cpp call UpdateMatches(80)
