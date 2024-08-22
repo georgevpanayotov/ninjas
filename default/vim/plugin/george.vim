@@ -123,6 +123,15 @@ map \t :FZF<ENTER>
 " Update errorformat to support Kotlin compiler errors.
 let &errorformat="e: file://%f:%l:%c %m,".&errorformat
 
+" Update errorformat to support typescript compiler errors.
+let &errorformat="%f:%l:%c - error TS%n: %m,".&errorformat
+
+" Recongize errors in bazel BUILD files.
+let &errorformat="ERROR: %f:%l:%c: %m,".&errorformat
+
+" Recognize errors in Prettier autoformatter
+let &errorformat="%E[error] Unable to format file: %f,%Z%m (%l:%c),".&errorformat
+
 if has('python')
     execute 'pyfile ' . fnamemodify(resolve(expand('<sfile>:p')), ':h') . '/selectv.py'
     map \c :py ChangeToCamelCase() <ENTER>
