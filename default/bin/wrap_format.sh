@@ -5,13 +5,13 @@ FORMATTER=$1
 shift
 
 INPUT=$(cat)
-OUTPUT=$(echo $INPUT | $FORMATTER $* 2> ~/wf_err)
+OUTPUT=$(echo -E "$INPUT" | $FORMATTER $* 2> ~/wf_err)
 
 EC=$?
 
 if [[ "$EC" == "0" ]]; then
-    echo $OUTPUT
+    echo -E "$OUTPUT"
 else
-    echo $INPUT
+    echo -E "$INPUT"
     exit $EC
 fi
