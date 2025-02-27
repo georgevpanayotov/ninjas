@@ -61,7 +61,11 @@ highlight TabColor ctermbg=green guibg=green ctermfg=black guifg=black
 highlight ColorColumn ctermbg=red guibg=red
 
 command CommentStrip :g/^[^:]*:\d\+\(:\d\+\)\?:\s*\/\//d
+" Creates a new window that is a scratch space.
 command Itch :vnew|setlocal buftype=nofile|setlocal bufhidden=hide|setlocal noswapfile
+" Turns the current window into a scratch space. If this was based on a real file, all of the
+" changes to that file will be lost.
+command Scratch :setlocal buftype=nofile|setlocal bufhidden=hide|setlocal noswapfile|0file|set noro
 command Malkovich :%s/\<[[:alnum:]_]*\>/Malkovich!/g
 
 au FileType objc,objcpp,cpp,proto setlocal equalprg=clang-format\ -style=file\ -assume-filename=%
