@@ -107,4 +107,41 @@ uncognito() {
 # Update the prompt and screen title at startup.
 update_dir
 
+# Attempts to set a valid agent SSH_AUTH_SOCK if the current one is empty or invalid. This is useful
+# when remoting into a screen session and using agent forwarding. This has limitations. It won't
+# work if the screen session uses a valid socket that just happens to not include necessary
+# credentials. In this case, you must manually delete the socket and then run this. If this happens,
+# you may want to restore the old socket so that subsequent local uses of the screen session will
+# still work.
+update_ssh_agent() {
+    if [[ "$SSH_AUTH_SOCK" != "" && -e "$SSH_AUTH_SOCK" ]]; then
+        # Already have a valid agent.
+        return
+    fi
+
+    local -a agents
+    local i
+    local choice
+
+    agents=($(find /tmp/ -path /tmp/ssh-\*/\* -name agent.\* 2> /dev/null))
+
+    if [[ $#agents -eq 0 ]]; then
+        echo "No potential agents found."
+    elif [[ $#agents -eq 1 ]]; then
+        export SSH_AUTH_SOCK=$agents[1]
+    else
+        for i in {1..$#agents}; do
+            echo "$i: ${agents[$i]}"
+        done
+        read choice
+        if [[ $choice -gt 0 && $choice -le $#agents ]]; then
+            export SSH_AUTH_SOCK=$agents[$choice]
+        else
+            echo "Invalid choice"
+        fi
+
+    fi
+
+}
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
