@@ -122,7 +122,7 @@ update_dir
 # still work.
 update_ssh_agent() {
     if [[ "$SSH_AUTH_SOCK" != "" && -e "$SSH_AUTH_SOCK" ]]; then
-        # Already have a valid agent.
+        echo "Already have a valid agent."
         return
     fi
 
@@ -146,9 +146,35 @@ update_ssh_agent() {
         else
             echo "Invalid choice"
         fi
+    fi
+}
 
+# Unsets the SSH_AUTH_SOCK but saves it to be recovered later. Helpful for update_ssh_agent which
+# won't update an existing agent. An existing agent may not be ideal for a number of reasons:
+# 1. It doesn't contain the necessary credentials.
+# 2. It can't be unlocked remotely.
+stash_ssh_agent() {
+    if [[ "$SSH_AUTH_SOCK" == "" ]]; then
+        echo "No agent specified."
+        return
+    elif [[ ! -e "$SSH_AUTH_SOCK" ]]; then
+        echo "Invalid agent specified."
+        return
     fi
 
+    STASHED_SSH_AGENT=$SSH_AUTH_SOCK
+    unset SSH_AUTH_SOCK
+}
+
+# Restores a previously stashed agent.
+unstash_ssh_agent() {
+    if [[ "$STASHED_SSH_AGENT" == "" ]]; then
+        echo "No agent stashed."
+        return
+    fi
+
+    SSH_AUTH_SOCK=$STASHED_SSH_AGENT
+    unset STASHED_SSH_AGENT
 }
 
 function zle-line-init zle-keymap-select  {
