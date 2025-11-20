@@ -1,6 +1,8 @@
 #!/bin/zsh
 
-source helpers.zsh
+NINJAS_PATH=$(realpath $(dirname $0))
+
+source $NINJAS_PATH/helpers.zsh
 
 if [[ -f ~/.ninjas ]]; then
     echo "Removing legacy install."
@@ -10,20 +12,20 @@ fi
 mkdir -p ~/.ninjas
 mkdir -p ~/.vim/swp
 
-pwd > ~/.ninjas/.path
+echo $NINJAS_PATH > ~/.ninjas/.path
 
 # deploying vimrc
-relink $PWD/.vimrc ~/.vimrc
+relink $NINJAS_PATH/.vimrc ~/.vimrc
 
 # deploying zsh stuff
-relink $PWD/.zshrc ~/.zshrc
-relink $PWD/.zshenv ~/.zshenv
+relink $NINJAS_PATH/.zshrc ~/.zshrc
+relink $NINJAS_PATH/.zshenv ~/.zshenv
 
 # deploying screenrc
-relink $PWD/.screenrc ~/.screenrc
+relink $NINJAS_PATH/.screenrc ~/.screenrc
 
 # deploying .git config
-relink $PWD/.gitconfig ~/.gitconfig
+relink $NINJAS_PATH/.gitconfig ~/.gitconfig
 
 # deploying hgrc
-relink $PWD/.hgrc ~/.hgrc
+relink $NINJAS_PATH/.hgrc ~/.hgrc
