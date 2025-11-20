@@ -37,7 +37,7 @@ function FormatGP()
     let l:winview = winsaveview()
     norm gg=G
     if v:shell_error != 0
-        cf ~/wf_err
+        cf ~/.wf_err
     else
         call winrestview(l:winview)
     endif

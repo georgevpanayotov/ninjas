@@ -5,7 +5,7 @@ FORMATTER=$1
 shift
 
 INPUT=$(cat)
-OUTPUT=$(echo -E "$INPUT" | $FORMATTER $* 2> ~/wf_err)
+OUTPUT=$(echo -E "$INPUT" | $FORMATTER $* 2> ~/.wf_err)
 
 EC=$?
 
