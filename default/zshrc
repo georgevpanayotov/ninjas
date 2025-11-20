@@ -16,6 +16,8 @@ alias dirs=dirs\ -p
     (which $platZsh > /dev/null 2> /dev/null) && source $platZsh
 }
 
+MODE_PROMPT='$'
+
 # Update the prompt string to include the "prompt_header"
 # and set the screen's title if we're inside of a screen.
 update_dir() {
@@ -24,7 +26,7 @@ update_dir() {
     if (( $INCOGNITO )); then
         INCOGNITO_PROMPT="[i]"
     fi
-    PS1=" ##$INCOGNITO_PROMPT $PROMPT_HEADER%c $ "
+    PS1=" ##$INCOGNITO_PROMPT $PROMPT_HEADER%c $MODE_PROMPT "
     if [[ "$STY" != "" ]]; then
         stitle.sh
     fi
@@ -143,5 +145,18 @@ update_ssh_agent() {
     fi
 
 }
+
+function zle-line-init zle-keymap-select  {
+    if [[ $KEYMAP == "vicmd" ]]; then
+        MODE_PROMPT=":"
+    elif [[ $KEYMAP == "main" ||$KEYMAP == "viins"  ]]; then
+        MODE_PROMPT="$"
+    fi
+    update_dir
+    zle reset-prompt
+}
+
+zle -N zle-line-init
+zle -N zle-keymap-select
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
