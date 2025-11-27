@@ -26,7 +26,12 @@ update_dir() {
     if (( $INCOGNITO )); then
         INCOGNITO_PROMPT="[i]"
     fi
-    PS1=" ##$INCOGNITO_PROMPT $PROMPT_HEADER%c $MODE_PROMPT "
+    local COMBINED_TAGS=""
+    if [[ $#PROMPT_TAGS -gt 0 ]]; then
+        COMBINED_TAGS="[$PROMPT_TAGS]"
+    fi
+
+    PS1=" ##$COMBINED_TAGS$INCOGNITO_PROMPT $PROMPT_HEADER%c $MODE_PROMPT "
     if [[ "$STY" != "" ]]; then
         stitle.sh
     fi

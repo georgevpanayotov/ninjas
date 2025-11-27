@@ -3,6 +3,7 @@ if [[ "$NINJAS_PATH" == "" ]]; then
     return
 fi
 
+typeset -a PROMPT_TAGS
 
 () {
     zstyle :compinstall filename '/Users/george/.zshrc'
