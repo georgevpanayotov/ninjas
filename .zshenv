@@ -7,6 +7,9 @@ fi
 
 source $NINJAS_PATH/helpers.zsh
 
+typeset -a EXTRA_PACKAGES
+parseExtraPackages $*
+
 () {
     rm -rf ~/.ninjas/.hgrc
     rm -rf ~/.ninjas/.gitconfig

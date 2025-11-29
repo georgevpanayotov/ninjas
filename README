@@ -14,6 +14,9 @@ Additional configs can be loaded by putting a directory into
 For instance:
 .ninjas/package
 
+Configs can also be added as a parameter by launching zsh as follows:
+$ zsh -s -b --ninja /path/to/package
+
 The following files can be added to the package
 
     zshrc # Sourced in .zshrc

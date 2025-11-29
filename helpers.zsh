@@ -3,6 +3,23 @@
 listPackages() {
     echo $NINJAS_PATH/default
     find -L $HOME/.ninjas/ -maxdepth 1 -mindepth 1 -type d | sort
+    local extra=""
+
+    for extra in $EXTRA_PACKAGES; do
+        echo $extra
+    done
+}
+
+parseExtraPackages() {
+    while [[ "$1" != "" ]]; do
+        if [[ "$1" == "--ninja" ]]; then
+            shift
+
+            EXTRA_PACKAGES+="$1"
+        fi
+
+        shift
+    done
 }
 
 listVimPaths() {
