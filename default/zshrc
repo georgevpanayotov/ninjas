@@ -43,7 +43,7 @@ chpwd() {
 }
 
 zshaddhistory() {
-    if [[ "$1" == $'incognito\n' ]]; then
+    if [[ "$1" =~ "^\s*incognito\s*$" ]]; then
         return 1
     fi
 
