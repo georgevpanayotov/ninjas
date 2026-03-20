@@ -2,7 +2,7 @@
 
 listPackages() {
     echo $NINJAS_PATH/default
-    find -L $HOME/.ninjas/ -maxdepth 1 -mindepth 1 -type d | sort
+    find -L $HOME/.ninjas/ -maxdepth 1 -mindepth 1 -type d 2> /dev/null | sort
     local extra=""
 
     for extra in $EXTRA_PACKAGES; do

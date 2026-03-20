@@ -49,4 +49,9 @@ if __name__ == "__main__":
     dot_files = [".hg", ".git"]
     dot_files.extend(env_dot_files)
 
-    find_containing_folder(special_dirs, dot_files)
+    try:
+      find_containing_folder(special_dirs, dot_files)
+    except Exception:
+      # Don't dump errors into the prompt.
+      pass
+
