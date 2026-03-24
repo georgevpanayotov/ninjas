@@ -12,9 +12,13 @@ parseExtraPackages $*
 
 () {
     # Create tmp files to build the hgrc, gitconfig, and screenrc.
-    createHgrcIfNeeded
-    createGitConfigIfNeeded
-    createScreenrcIfNeeded
+    local hgrctmp=$(mktemp)
+    local gitconfigtmp=$(mktemp)
+    local screenrctmp=$(mktemp)
+
+    createRcHeader > $hgrctmp
+    createGitConfigHeader > $gitconfigtmp
+    createRcHeader > $screenrctmp
 
     local packages=($(listPackages))
     local package=""
@@ -38,23 +42,23 @@ parseExtraPackages $*
 
         local hgRc="$package/hgrc"
         if [[ -e "$hgRc" ]]; then
-            echo "%include $hgRc" >> ~/.ninjas/.hgrc.tmp
+            echo "%include $hgRc" >> $hgrctmp
         fi
 
         local gitConfig="$package/gitconfig"
         if [[ -e "$gitConfig" ]]; then
-            echo "path = $gitConfig" >> ~/.ninjas/.gitconfig.tmp
+            echo "path = $gitConfig" >> $gitconfigtmp
         fi
 
         local screenRc="$package/screenrc"
         if [[ -e "$screenRc" ]]; then
-            echo "source $screenRc" >> ~/.ninjas/.screenrc.tmp
+            echo "source $screenRc" >> $screenrctmp
         fi
     done
 
     # Only disrupt the real files if the tmps actually need to replace them. This helps avoid
     # situations where the config file is briefly missing during a subshell invocation.
-    replaceIfDifferent ~/.ninjas/.gitconfig ~/.ninjas/.gitconfig.tmp
-    replaceIfDifferent ~/.ninjas/.hgrc ~/.ninjas/.hgrc.tmp
-    replaceIfDifferent ~/.ninjas/.screenrc ~/.ninjas/.screenrc.tmp
+    replaceIfDifferent ~/.ninjas/.gitconfig $gitconfigtmp
+    replaceIfDifferent ~/.ninjas/.hgrc $hgrctmp
+    replaceIfDifferent ~/.ninjas/.screenrc $screenrctmp
 }
