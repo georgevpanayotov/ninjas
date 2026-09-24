@@ -1,0 +1,4 @@
+#!/bin/zsh
+
+# Checks the vim swap files.
+find ~/.vim/swp -type f -printf "%f\n" | tr "%" "/" | sed "s/\.sw[op]$//"
